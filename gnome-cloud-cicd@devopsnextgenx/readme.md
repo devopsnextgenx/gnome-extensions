@@ -6,6 +6,9 @@ cp gnome-debug.svg ~/bin
 cp gnome-debug.desktop ~/.local/share/applications
 ```
 
+### gnome-cloud-cicd extension
+
+![gnome-cloud-cicd](./gnome-cloud-cicd.gif)
 
 ## Like this Extension?
 
