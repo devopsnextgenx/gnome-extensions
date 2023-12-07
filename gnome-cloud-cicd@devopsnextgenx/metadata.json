@@ -1,0 +1,15 @@
+{
+  "name": "gnome-cloud-cicd",
+  "description": "Gnome Extension to enable cicd/container/kubernetes and cloud resource handling",
+  "uuid": "gnome-cloud-cicd@devopsnextgenx",
+  "settings-schema": "io.k8s.framework.gnome-cloud-cicd",
+  "shell-version": [
+    "45"
+  ],
+  "url": "https://github.com/devopsnextgenx/gnome-extensions/gnome-cloud-cicd",
+  "donations": {
+    "kofi": "devopsnextgenx"
+  },
+  "version": 1,
+  "version-name": "0.0.1"
+}

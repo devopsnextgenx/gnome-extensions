@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=43.2.0.25211
+Name=GNOME Debug
+Comment=Gnome Debugger
+Exec=/home/{user}/bin/gnome-debug
+Icon=/home/{user}/bin/gnome-debug.svg
+Terminal=false
+Type=Application
+Categories=Utility;Application;
