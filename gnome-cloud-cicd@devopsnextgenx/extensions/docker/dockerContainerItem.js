@@ -8,11 +8,11 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import { buildIcon } from '../base/ui-component-store.js';
 import { ActionIcon } from '../base/actionIcon.js';
-import * as Docker from './dockerExtension.js'
+import * as System from './dockerExtension.js'
 
 
 const _dockerAction = (containerName, dockerCommand) => {
-  Docker.runCommand(dockerCommand, containerName, (ok, command, err) => {
+  System.runCommand(dockerCommand, containerName, (ok, command, err) => {
     if (ok) {
       Main.notify("Command `" + command + "` successful");
     } else {
