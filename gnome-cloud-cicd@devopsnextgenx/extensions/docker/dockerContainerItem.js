@@ -8,7 +8,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import { buildIcon } from '../base/ui-component-store.js';
 import { ActionIcon } from '../base/actionIcon.js';
-import * as System from './dockerExtension.js'
+import * as System from './base/systemInterface.js'
 
 
 const _dockerAction = (containerName, dockerCommand) => {
