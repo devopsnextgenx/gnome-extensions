@@ -8,7 +8,7 @@ cp gnome-debug.desktop ~/.local/share/applications
 
 ### gnome-cloud-cicd extension
 
-[![gnome-cloud-cicd](./gnome-cloud-cicd.png)](./gnome-cloud-cicd.webm)
+[![gnome-cloud-cicd](./gnome-cloud-cicd.png)](https://youtu.be/Ah-LQxtOHak)
 
 
 ## Like this Extension?

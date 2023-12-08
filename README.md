@@ -5,7 +5,7 @@ Developing different gnome-extensions
 
 - [gnome-cloud-cicd](https://github.com/devopsnextgenx/gnome-extensions/tree/main/gnome-cloud-cicd%40devopsnextgenx)
 
-[![gnome-cloud-cicd](./gnome-cloud-cicd@devopsnextgenx/gnome-cloud-cicd.png)](./gnome-cloud-cicd@devopsnextgenx/gnome-cloud-cicd.webm)
+[![gnome-cloud-cicd](./gnome-cloud-cicd@devopsnextgenx/gnome-cloud-cicd.png)](https://youtu.be/Ah-LQxtOHak)
 
 ## Like this Extension?
 
