@@ -3,6 +3,7 @@ import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { BaseContainer } from './extensions/container.js';
 import { DockerMenu } from './extensions/docker/dockerMonitor.js';
 import { KindCluster } from './extensions/kind/kindMonitor.js';
+import { checkDependencies, getMissingDependencies } from './extensions/base/systemInterface.js';
 
 const _this = {}
 
@@ -29,18 +30,37 @@ class DevContainerManager {
     }
 }
 
+
 export default class DevContainerManagerExtension extends Extension {
     constructor(metadata) {
         super(metadata);
-        _this['extension'] = this;
     }
-
+    
     enable() {
-        this.devContainerManager = new DevContainerManager();
-        this.devContainerManager.addToPanel();
+        _this['extension'] = this;
+        log(`[${this.metadata.name}] enabling version ${this.metadata.version}`);
+        const dependencies = checkDependencies();
+        const missingContainerLib = !dependencies.hasDocker && !dependencies.hasPodman;
+        const missingKind = !dependencies.hasKind;
+        if (missingContainerLib || missingKind) {
+
+            log(`[${this.metadata.name}] missing dependencies, showing problem reporter instead`);
+            this.devContainerManager = new Problem.ProblemReporter(this.metadata);
+
+            let missingLibs = getMissingDependencies(dependencies);
+
+            let msg = _(`It looks like your computer is missing following libraries: ${missingLibs.join(', ')}\n\nAfter installing them, you'll need to restart your computer.`);
+            devContainerManager.setMessage(msg);
+
+            Main.panel.addToStatusArea(`${this.metadata.name} Problem Reporter`, this.devContainerManager);
+        } else {
+            this.devContainerManager = new DevContainerManager();
+            this.devContainerManager.addToPanel();
+        }
     }
 
     disable() {
+        _this['extension'] = null;
         this.devContainerManager.destroy();
         this.devContainerManager = null;
     }

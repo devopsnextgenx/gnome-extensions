@@ -13,19 +13,28 @@ export const dockerCommandsToLabels = {
   logs: "Logs",
 };
 
-const dependency = {
-  hasDocker: !!GLib.find_program_in_path("docker"),
-  hasPodman: !!GLib.find_program_in_path("podman"),
-  hasKind: !!GLib.find_program_in_path("kind"),
-  hasKubectl: !!GLib.find_program_in_path("kubectl"),
-  hasXTerminalEmulator: !!GLib.find_program_in_path("x-terminal-emulator")
+export const dependencies = {
 };
 
-export const hasDocker = dependency.hasDocker;
-export const hasPodman = dependency.hasPodman;
-export const hasKind = dependency.hasKind;
-export const hasKubectl = dependency.hasKubectl;
-export const hasXTerminalEmulator = dependency.hasXTerminalEmulator;
+export const checkDependencies = () => {
+  dependencies['hasDocker'] = !!GLib.find_program_in_path("docker");
+  dependencies['hasPodman'] = !!GLib.find_program_in_path("podman");
+  dependencies['hasKind'] = !!GLib.find_program_in_path("kind");
+  dependencies['hasKubectl'] = !!GLib.find_program_in_path("kubectl");
+  dependencies['hasXTerminalEmulator'] = !!GLib.find_program_in_path("x-terminal-emulator");
+
+  return dependencies;
+};
+
+const REQUIRED_LIBS = ['Docker', 'Podman', 'Kind']
+
+export const getMissingDependencies = (dependencies) => {
+  const missingLibs = [];
+
+  Object.keys(dependencies).forEach(lib=> !dependencies[lib] && REQUIRED_LIBS.includes(`${lib.substring(3)}`) && missingLibs.push(`Missing ${lib.substring(3)}`));
+
+  return missingLibs;
+}
 
 /**
  * Check if Linux user is in 'docker' group (to manage Docker without 'sudo')

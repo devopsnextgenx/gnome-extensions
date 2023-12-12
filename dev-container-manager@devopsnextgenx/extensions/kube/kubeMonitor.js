@@ -57,7 +57,7 @@ export const KubeCluster = GObject.registerClass(
       this.menu.addMenuItem(new PopupMenuItem(loading));
 
       this._refreshCount();
-      if (System.hasPodman || System.hasDocker) {
+      if (System.dependencies.hasPodman || System.dependencies.hasDocker) {
         this.show();
       }
     }
@@ -99,7 +99,7 @@ export const KubeCluster = GObject.registerClass(
     }
 
     _checkServices() {
-      if (!System.hasPodman && !System.hasDocker) {
+      if (!System.dependencies.hasPodman && !System.dependencies.hasDocker) {
         let errMsg = _("Please install Docker or Podman to use this plugin");
         this.menu.addMenuItem(new PopupMenuItem(errMsg));
         throw new Error(errMsg);
@@ -107,7 +107,7 @@ export const KubeCluster = GObject.registerClass(
     }
 
     async _checkDockerRunning() {
-      if (!System.hasPodman && !(await System.isDockerRunning())) {
+      if (!System.dependencies.hasPodman && !(await System.isDockerRunning())) {
         let errMsg = _(
           "Please start your Docker service first!\n(Seems Docker daemon not started yet.)"
         );
@@ -116,7 +116,7 @@ export const KubeCluster = GObject.registerClass(
     }
 
     async _checkUserInDockerGroup() {
-      if (!System.hasPodman && !(await System.isUserInDockerGroup)) {
+      if (!System.dependencies.hasPodman && !(await System.isUserInDockerGroup)) {
         let errMsg = _(
           "Please put your Linux user into `docker` group first!\n(Seems not in that yet.)"
         );
