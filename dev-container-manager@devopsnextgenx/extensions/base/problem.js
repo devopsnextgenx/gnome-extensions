@@ -6,7 +6,7 @@ import GObject from 'gi://GObject';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 
-const ProblemReporter = GObject.registerClass(
+export const ProblemReporter = GObject.registerClass(
     class ProblemReporter extends PanelMenu.Button {
         _init(metadata) {
             super._init(0.0, `${metadata.name} Problem Reporter`, false);

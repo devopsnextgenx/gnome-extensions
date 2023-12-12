@@ -3,6 +3,7 @@ import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { BaseContainer } from './extensions/container.js';
 import { DockerMenu } from './extensions/docker/dockerMonitor.js';
 import { KindCluster } from './extensions/kind/kindMonitor.js';
+import { ProblemReporter } from './extensions/base/problem.js';
 import { checkDependencies, getMissingDependencies } from './extensions/base/systemInterface.js';
 
 const _this = {}
@@ -45,14 +46,14 @@ export default class DevContainerManagerExtension extends Extension {
         if (missingContainerLib || missingKind) {
 
             log(`[${this.metadata.name}] missing dependencies, showing problem reporter instead`);
-            this.devContainerManager = new Problem.ProblemReporter(this.metadata);
+            this.devContainerManager = new ProblemReporter(this.metadata);
 
             let missingLibs = getMissingDependencies(dependencies);
 
             let msg = _(`It looks like your computer is missing following libraries: ${missingLibs.join(', ')}\n\nAfter installing them, you'll need to restart your computer.`);
-            devContainerManager.setMessage(msg);
+            this.devContainerManager.setMessage(msg);
 
-            Main.panel.addToStatusArea(`${this.metadata.name} Problem Reporter`, this.devContainerManager);
+            Main.panel.addToStatusArea(`${this.metadata.name} Problem Reporter`, this.devContainerManager, -1, 'left');
         } else {
             this.devContainerManager = new DevContainerManager();
             this.devContainerManager.addToPanel();
