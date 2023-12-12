@@ -31,7 +31,7 @@ const REQUIRED_LIBS = ['Docker', 'Podman', 'Kind']
 export const getMissingDependencies = (dependencies) => {
   const missingLibs = [];
 
-  Object.keys(dependencies).forEach(lib=> !dependencies[lib] && REQUIRED_LIBS.includes(`${lib.substring(3)}`) && missingLibs.push(`Missing ${lib.substring(3)}`));
+  Object.keys(dependencies).forEach(lib=> !dependencies[lib] && REQUIRED_LIBS.includes(`${lib.substring(3)}`) && missingLibs.push(`${lib.substring(3)}`));
 
   return missingLibs;
 }
