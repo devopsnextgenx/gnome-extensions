@@ -1,9 +1,11 @@
 import St from "gi://St";
 import Gio from "gi://Gio";
 
-export const buildIcon = (extension, iconName, styleClass = "system-status-icon", iconSize = "16") => {
+import { getExtensionObject } from "../../extension.js";
+
+export const buildIcon = (iconName, styleClass = "system-status-icon", iconSize = "16") => {
   const gicon = Gio.icon_new_for_string(
-    `${extension.path}/icons/${iconName}.svg`
+    `${getExtensionObject().path}/icons/${iconName}.svg`
   );
   return new St.Icon({
     gicon: gicon,

@@ -10,9 +10,9 @@ const MENU_COLUMNS = 2;
 
 export const Indicator = GObject.registerClass(
     class Indicator extends Monitor {
-        _init(name, uuid, extension) {
-            super._init(name, uuid, extension);
-            this.icon = buildIcon(this.extension, "circle-three")
+        _init(name, uuid) {
+            super._init(name, uuid);
+            this.icon = buildIcon("circle-three")
             this.addChild(this.icon);
             this.addChild(new St.Label({
                 text: 'Indicator',

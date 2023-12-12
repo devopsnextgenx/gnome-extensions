@@ -17,8 +17,8 @@ const isContainerUp = (container) => container.status.indexOf("Up") > -1;
 // Docker icon as panel menu
 export const DockerMenu = GObject.registerClass(
   class DockerMenu extends Monitor {
-    _init(name, uuid, extension) {
-      super._init(name, uuid, extension);
+    _init(name, uuid) {
+      super._init(name, uuid);
       this._refreshCount = this._refreshCount.bind(this);
       this._refreshMenu = this._refreshMenu.bind(this);
       this._feedMenu = this._feedMenu.bind(this);
@@ -27,7 +27,7 @@ export const DockerMenu = GObject.registerClass(
 
       this._refreshDelay = this.settings.get_int("refresh-delay");
 
-      this.icon = buildIcon(this.extension, "docker");
+      this.icon = buildIcon("docker");
       this.addChild(this.icon);
 
       const loading = _("Loading...");
@@ -183,7 +183,6 @@ export const DockerMenu = GObject.registerClass(
         this._containers = dockerContainers;
         this._containers.forEach((container) => {
           const subMenu = new DockerMonitorItem(
-            this.extension,
             container.project,
             container.name,
             container.status

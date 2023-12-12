@@ -17,8 +17,8 @@ const isContainerUp = (container) => container.status.indexOf("Up") > -1;
 // Kind icon as panel menu
 export const KindCluster = GObject.registerClass(
   class KindCluster extends Monitor {
-    _init(name, uuid, extension) {
-      super._init(name, uuid, extension);
+    _init(name, uuid) {
+      super._init(name, uuid);
       this._refreshCount = this._refreshCount.bind(this);
       this._refreshMenu = this._refreshMenu.bind(this);
       this._feedMenu = this._feedMenu.bind(this);
@@ -27,7 +27,7 @@ export const KindCluster = GObject.registerClass(
 
       this._refreshDelay = this.settings.get_int("refresh-delay");
 
-      this.icon = buildIcon(this.extension, "kind");
+      this.icon = buildIcon("kind");
       this.addChild(this.icon);
 
       const loading = _(`Loading...`,);
@@ -178,7 +178,6 @@ export const KindCluster = GObject.registerClass(
         this._kindClusters = kindClusters;
         this._kindClusters.forEach((cluster) => {
           const subMenu = new KindMonitorItem(
-            this.extension,
             cluster
           );
           this.addMenuRow(subMenu, 0, 2, 1);

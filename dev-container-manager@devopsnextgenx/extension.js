@@ -4,11 +4,15 @@ import { BaseContainer } from './extensions/container.js';
 import { DockerMenu } from './extensions/docker/dockerMonitor.js';
 import { KindCluster } from './extensions/kind/kindMonitor.js';
 
+const _this = {}
+
+export const getExtensionObject = () => { return _this['extension'] };
+
 class DevContainerManager {
-    constructor(extension) {
-        this.container = new BaseContainer(extension);
-        this.container.addMonitor(new DockerMenu('Docker Containers', 'docker-containers', extension));
-        this.container.addMonitor(new KindCluster('Kind Clusters', 'kind-clusters', extension));
+    constructor() {
+        this.container = new BaseContainer();
+        this.container.addMonitor(new DockerMenu('Docker Containers', 'docker-containers'));
+        this.container.addMonitor(new KindCluster('Kind Clusters', 'kind-clusters'));
     }
     addToPanel() {
         Main.panel.addToStatusArea('DevContainerManager', this.container, -1, 'left');
@@ -28,10 +32,11 @@ class DevContainerManager {
 export default class DevContainerManagerExtension extends Extension {
     constructor(metadata) {
         super(metadata);
+        _this['extension'] = this;
     }
 
     enable() {
-        this.devContainerManager = new DevContainerManager(this);
+        this.devContainerManager = new DevContainerManager();
         this.devContainerManager.addToPanel();
     }
 

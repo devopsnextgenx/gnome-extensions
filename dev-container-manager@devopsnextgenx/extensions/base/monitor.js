@@ -8,6 +8,8 @@ import { gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.j
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
+import { getExtensionObject } from "../../extension.js";
+
 const MENU_COLUMNS = 2;
 
 export const Monitor = GObject.registerClass({
@@ -15,7 +17,7 @@ export const Monitor = GObject.registerClass({
     },
     Signals: { 'menu-set': {} },
 }, class Monitor extends St.Widget {
-    _init(name, uuid, extension) {
+    _init(name, uuid) {
         super._init({
             reactive: true,
             can_focus: true,
@@ -29,9 +31,8 @@ export const Monitor = GObject.registerClass({
         });
         this.name = name;
         this.uuid = uuid;
-        this.extension = extension;
 
-        this.settings = this.extension.getSettings(
+        this.settings = getExtensionObject().getSettings(
             "org.gnome.shell.extensions.dev-container-manager"
         );
 

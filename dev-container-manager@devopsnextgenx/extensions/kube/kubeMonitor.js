@@ -17,7 +17,7 @@ const isContainerUp = (container) => container.status.indexOf("Up") > -1;
 // Kind icon as panel menu
 export const KubeCluster = GObject.registerClass(
   class KubeCluster extends Monitor {
-    _init(name, uuid, extension) {
+    _init(name, uuid) {
       super._init(name, uuid);
       this._refreshCount = this._refreshCount.bind(this);
       this._refreshMenu = this._refreshMenu.bind(this);
@@ -27,7 +27,7 @@ export const KubeCluster = GObject.registerClass(
 
       this._refreshDelay = this.settings.get_int("refresh-delay");
 
-      this.icon = buildIcon(this.extension, "google-kube");
+      this.icon = buildIcon("google-kube");
       this.addChild(this.icon);
 
       const loading = _("Loading...");
@@ -184,7 +184,6 @@ export const KubeCluster = GObject.registerClass(
         this._containers = dockerContainers;
         this._containers.forEach((container) => {
           const subMenu = new DockerMonitorItem(
-            this.extension,
             container.project,
             container.name,
             container.status

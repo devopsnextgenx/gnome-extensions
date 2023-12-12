@@ -5,12 +5,14 @@ import GObject from 'gi://GObject';
 
 import { gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 
+import { getExtensionObject } from "../../extension.js";
+
 export const ActionIcon = GObject.registerClass({
     Properties: {
     },
     Signals: { 'menu-set': {} },
 }, class ActionIcon extends St.Widget {
-    _init(name, uuid, extension) {
+    _init(name, uuid) {
         super._init({
             reactive: true,
             can_focus: true,
@@ -24,12 +26,11 @@ export const ActionIcon = GObject.registerClass({
         });
         this.name = name;
         this.uuid = uuid;
-        this.extension = extension;
 
         this._delegate = this;
         this._signals = [];
 
-        this.settings = this.extension.getSettings(
+        this.settings = getExtensionObject().getSettings(
             "org.gnome.shell.extensions.dev-container-manager"
         );
 
