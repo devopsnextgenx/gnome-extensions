@@ -14,7 +14,6 @@ export const buildIcon = (iconName, styleClass = "system-status-icon", iconSize 
   });
 };
 
-
 export default {
   buildIcon
 }
