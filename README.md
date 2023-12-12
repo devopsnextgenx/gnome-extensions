@@ -1,11 +1,19 @@
 # gnome-extensions
 Developing different gnome-extensions
 
-### gnome-cloud-cicd extension
+### Copy `gnome-debug.desktop` file to enable debug of the gnome extension
+- Change the path in `gnome-debug.desktop` for `Exec` and `Icon` as per your `{user}` home directory path
+```
+cp gnome-debug ~/bin
+cp gnome-debug.svg ~/bin
+cp gnome-debug.desktop ~/.local/share/applications
+```
 
-- [gnome-cloud-cicd](https://github.com/devopsnextgenx/gnome-extensions/tree/main/gnome-cloud-cicd%40devopsnextgenx)
+### dev-container-manager extension
 
-[![gnome-cloud-cicd](./gnome-cloud-cicd@devopsnextgenx/gnome-cloud-cicd.png)](https://youtu.be/Ah-LQxtOHak)
+- [dev-container-manager](https://github.com/devopsnextgenx/gnome-extensions/tree/main/dev-container-manager%40devopsnextgenx)
+
+[![dev-container-manager](./dev-container-manager@devopsnextgenx/dev-container-manager.png)](https://youtu.be/Ah-LQxtOHak)
 
 ## Like this Extension?
 

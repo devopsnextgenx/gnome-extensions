@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema id="io.k8s.framework.gnome-cloud-cicd" path="/io/k8s/framework/gnome-cloud-cicd/">
+  <schema id="org.gnome.shell.extensions.dev-container-manager" path="/org/gnome/shell/extensions/dev-container-manager/">
     <key name="refresh-delay" type="i">
       <default>2</default>
     </key>

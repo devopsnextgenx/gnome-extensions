@@ -24,10 +24,10 @@ const _kindAction = (clusterName, clusterCommand) => {
     });
 }
 
-const actionIcon = (clusterName, name = "empty", styleClass = "action-button", action) => {
-    const actionIconWidget = new ActionIcon(`${clusterName}-${name}`, `${clusterName}-${name}`);
+const actionIcon = (extension, clusterName, name = "empty", styleClass = "action-button", action) => {
+    const actionIconWidget = new ActionIcon(`${clusterName}-${name}`, `${clusterName}-${name}`, extension);
     let button = new St.Button({ style_class: `${name != 'empty' && action ? 'button' : 'empty-icon'} action-button` });
-    button.child = buildIcon(name, `${styleClass}`, action ? "16" : "20");
+    button.child = buildIcon(extension, name, `${styleClass}`, action ? "16" : "20");
     actionIconWidget.addChild(button);
     action && button.connect('clicked', () => _kindAction(clusterName, action)); // 
     return actionIconWidget;
@@ -53,7 +53,7 @@ const getStatus = (statusMessage) => {
 // Menu entry representing a Kind Cluster
 export const KindMonitorItem = GObject.registerClass(
     class KindMonitorItem extends St.Widget {
-        _init(clusterName) {
+        _init(extension, clusterName) {
             super._init({
                 reactive: true,
                 can_focus: true,
@@ -65,13 +65,14 @@ export const KindMonitorItem = GObject.registerClass(
                 y_expand: true,
 
             });
+            this.extension = extension;
             let hbox = new St.BoxLayout();
             this.add_child(hbox);
             this.box = hbox;
 
-            this.addChild(actionIcon(clusterName, "docker-container-symbolic", "status-running"));
+            this.addChild(actionIcon(this.extension, clusterName, "docker-container-symbolic", "status-running"));
 
-            this.addChild(actionIcon(clusterName, "docker-container-stop-symbolic", "status-stopped", "delete"));
+            this.addChild(actionIcon(this.extension, clusterName, "docker-container-stop-symbolic", "status-stopped", "delete"));
 
             this.addChild(new St.Label({ text: _(clusterName), style_class: `item-label` }));
 

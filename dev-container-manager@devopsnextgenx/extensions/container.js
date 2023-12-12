@@ -4,8 +4,8 @@ import GObject from 'gi://GObject';
 import St from 'gi://St';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 
-export const GnomeCloudCicdContainer = GObject.registerClass(
-    class GnomeCloudCicdContainer extends PanelMenu.Button {
+export const BaseContainer = GObject.registerClass(
+    class BaseContainer extends PanelMenu.Button {
         _init(menuAlignment, nameText, dontCreateMenu) {
             super._init({
                 menuAlignment,

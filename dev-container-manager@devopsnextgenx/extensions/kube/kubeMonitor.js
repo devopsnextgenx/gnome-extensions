@@ -9,15 +9,15 @@ import { PopupMenuItem } from 'resource:///org/gnome/shell/ui/popupMenu.js'
 
 import { Monitor } from '../base/monitor.js';
 import * as System from '../base/systemInterface.js';
-import { KindMonitorItem } from '../kind/kindMonitorItem.js';
+import { DockerMonitorItem } from '../docker/dockerMonitorItem.js';
 import { buildIcon } from '../base/ui-component-store.js';
 
 const isContainerUp = (container) => container.status.indexOf("Up") > -1;
 
 // Kind icon as panel menu
-export const KindCluster = GObject.registerClass(
-  class KindCluster extends Monitor {
-    _init(name, uuid) {
+export const KubeCluster = GObject.registerClass(
+  class KubeCluster extends Monitor {
+    _init(name, uuid, extension) {
       super._init(name, uuid);
       this._refreshCount = this._refreshCount.bind(this);
       this._refreshMenu = this._refreshMenu.bind(this);
@@ -27,10 +27,10 @@ export const KindCluster = GObject.registerClass(
 
       this._refreshDelay = this.settings.get_int("refresh-delay");
 
-      this.icon = buildIcon("kind");
+      this.icon = buildIcon(this.extension, "google-kube");
       this.addChild(this.icon);
 
-      const loading = _(`Loading...`,);
+      const loading = _("Loading...");
       this.buttonText = new St.Label({
         text: loading,
         style_class: 'panel-label',
@@ -38,7 +38,7 @@ export const KindCluster = GObject.registerClass(
       });
       this.addChild(this.buttonText);
       this.addChild(new St.Label({
-        text: 'Kind',
+        text: 'Kube',
         style_class: 'panel-label',
         y_align: Clutter.ActorAlign.CENTER,
       }));
@@ -63,8 +63,8 @@ export const KindCluster = GObject.registerClass(
     }
 
     destroy() {
-      super.destroy();
       this.clearLoop();
+      super.destroy();
     }
 
     _refreshDelayChanged() {
@@ -84,9 +84,11 @@ export const KindCluster = GObject.registerClass(
     async _refreshMenu() {
       try {
         if (this.menu.isOpen) {
-          const clusters = await System.getKindClusters();
-          this._updateCountLabel(clusters.length);
-          this._feedMenu(clusters)
+          const containers = await System.getContainers();
+          this._updateCountLabel(
+            containers.filter((container) => isContainerUp(container)).length
+          );
+          this._feedMenu(containers)
             .catch((e) =>
               this.menu.addMenuItem(new PopupMenuItem(e.message))
             );
@@ -97,17 +99,11 @@ export const KindCluster = GObject.registerClass(
     }
 
     _checkServices() {
-      let errMsg = undefined;
       if (!System.hasPodman && !System.hasDocker) {
-        errMsg = _("Please install Docker or Podman to use this plugin");
-      }
-      if (!System.hasKind) {
-        errMsg = _("Please install Kind to use this plugin");
-      }
-      if (errMsg) {
+        let errMsg = _("Please install Docker or Podman to use this plugin");
         this.menu.addMenuItem(new PopupMenuItem(errMsg));
         throw new Error(errMsg);
-      };
+      }
     }
 
     async _checkDockerRunning() {
@@ -131,7 +127,8 @@ export const KindCluster = GObject.registerClass(
     async _check() {
       return Promise.all([
         this._checkServices(),
-        this._checkDockerRunning()
+        this._checkDockerRunning(),
+        //this._checkUserInDockerGroup()
       ]);
     }
 
@@ -151,8 +148,8 @@ export const KindCluster = GObject.registerClass(
         // clear the loop to avoid a race condition infinitely spamming logs about St.Label not longer being accessible
         this.clearLoop();
 
-        const kindClusters = await System.getKindClusters();
-        this._updateCountLabel(kindClusters.length);
+        const dockerCount = await System.getContainerCount();
+        this._updateCountLabel(dockerCount);
 
         // Allow setting a value of 0 to disable background refresh in the settings
         if (this._refreshDelay > 0) {
@@ -168,22 +165,34 @@ export const KindCluster = GObject.registerClass(
       }
     }
 
-    async _feedMenu(kindClusters) {
+    async _feedMenu(dockerContainers) {
       await this._check();
       if (
-        !this._kindClusters ||
-        kindClusters.length !== this._kindClusters.length
+        !this._containers ||
+        dockerContainers.length !== this._containers.length ||
+        dockerContainers.some((currContainer, i) => {
+          const container = this._containers[i];
+
+          return (
+            currContainer.project !== container.project ||
+            currContainer.name !== container.name ||
+            isContainerUp(currContainer) !== isContainerUp(container)
+          );
+        })
       ) {
         this.clearMenu();
-        this._kindClusters = kindClusters;
-        this._kindClusters.forEach((cluster) => {
-          const subMenu = new KindMonitorItem(
-            cluster
+        this._containers = dockerContainers;
+        this._containers.forEach((container) => {
+          const subMenu = new DockerMonitorItem(
+            this.extension,
+            container.project,
+            container.name,
+            container.status
           );
           this.addMenuRow(subMenu, 0, 2, 1);
         });
-        if (!this._kindClusters.length) {
-          this.menu.addMenuItem(new PopupMenuItem("No kind clusters detected"));
+        if (!this._containers.length) {
+          this.menu.addMenuItem(new PopupMenuItem("No containers detected"));
         }
       }
     }

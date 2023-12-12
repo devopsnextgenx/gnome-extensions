@@ -13,11 +13,19 @@ export const dockerCommandsToLabels = {
   logs: "Logs",
 };
 
-export const hasDocker = !!GLib.find_program_in_path("docker");
-export const hasPodman = !!GLib.find_program_in_path("podman");
-export const hasKind = !!GLib.find_program_in_path("kind");
-export const hasKubectl = !!GLib.find_program_in_path("kubectl");
-export const hasXTerminalEmulator = !!GLib.find_program_in_path("x-terminal-emulator");
+const dependency = {
+  hasDocker: !!GLib.find_program_in_path("docker"),
+  hasPodman: !!GLib.find_program_in_path("podman"),
+  hasKind: !!GLib.find_program_in_path("kind"),
+  hasKubectl: !!GLib.find_program_in_path("kubectl"),
+  hasXTerminalEmulator: !!GLib.find_program_in_path("x-terminal-emulator")
+};
+
+export const hasDocker = dependency.hasDocker;
+export const hasPodman = dependency.hasPodman;
+export const hasKind = dependency.hasKind;
+export const hasKubectl = dependency.hasKubectl;
+export const hasXTerminalEmulator = dependency.hasXTerminalEmulator;
 
 /**
  * Check if Linux user is in 'docker' group (to manage Docker without 'sudo')

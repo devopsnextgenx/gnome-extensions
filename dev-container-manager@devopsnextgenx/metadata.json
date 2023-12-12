@@ -1,0 +1,15 @@
+{
+  "name": "dev-container-manager",
+  "description": "Gnome Extension to enable cicd/container/kubernetes and cloud resource handling",
+  "uuid": "dev-container-manager@devopsnextgenx",
+  "settings-schema": "org.gnome.shell.extensions.dev-container-manager",
+  "shell-version": [
+    "45"
+  ],
+  "url": "https://github.com/devopsnextgenx/gnome-extensions/dev-container-manager",
+  "donations": {
+    "kofi": "devopsnextgenx"
+  },
+  "version": 1,
+  "version-name": "0.0.1"
+}

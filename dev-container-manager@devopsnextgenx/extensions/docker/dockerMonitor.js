@@ -8,17 +8,17 @@ import Clutter from 'gi://Clutter';
 import { PopupMenuItem } from 'resource:///org/gnome/shell/ui/popupMenu.js'
 
 import { Monitor } from '../base/monitor.js';
-import * as System from '../base/systemInterface.js';
-import { DockerMonitorItem } from '../docker/dockerMonitorItem.js';
 import { buildIcon } from '../base/ui-component-store.js';
+import * as System from '../base/systemInterface.js';
+import { DockerMonitorItem } from './dockerMonitorItem.js';
 
 const isContainerUp = (container) => container.status.indexOf("Up") > -1;
 
-// Kind icon as panel menu
-export const KubeCluster = GObject.registerClass(
-  class KubeCluster extends Monitor {
-    _init(name, uuid) {
-      super._init(name, uuid);
+// Docker icon as panel menu
+export const DockerMenu = GObject.registerClass(
+  class DockerMenu extends Monitor {
+    _init(name, uuid, extension) {
+      super._init(name, uuid, extension);
       this._refreshCount = this._refreshCount.bind(this);
       this._refreshMenu = this._refreshMenu.bind(this);
       this._feedMenu = this._feedMenu.bind(this);
@@ -27,7 +27,7 @@ export const KubeCluster = GObject.registerClass(
 
       this._refreshDelay = this.settings.get_int("refresh-delay");
 
-      this.icon = buildIcon("google-kube");
+      this.icon = buildIcon(this.extension, "docker");
       this.addChild(this.icon);
 
       const loading = _("Loading...");
@@ -38,13 +38,12 @@ export const KubeCluster = GObject.registerClass(
       });
       this.addChild(this.buttonText);
       this.addChild(new St.Label({
-        text: 'Kube',
+        text: 'Docker',
         style_class: 'panel-label',
         y_align: Clutter.ActorAlign.CENTER,
       }));
 
       this._buildMenu();
-
     }
 
     _buildMenu() {
@@ -63,8 +62,8 @@ export const KubeCluster = GObject.registerClass(
     }
 
     destroy() {
-      super.destroy();
       this.clearLoop();
+      super.destroy();
     }
 
     _refreshDelayChanged() {
@@ -184,6 +183,7 @@ export const KubeCluster = GObject.registerClass(
         this._containers = dockerContainers;
         this._containers.forEach((container) => {
           const subMenu = new DockerMonitorItem(
+            this.extension,
             container.project,
             container.name,
             container.status
