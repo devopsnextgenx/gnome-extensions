@@ -39,21 +39,23 @@ export default class DevContainerManagerExtension extends Extension {
     
     enable() {
         _this['extension'] = this;
-        log(`[${this.metadata.name}] enabling version ${this.metadata.version}`);
+        console.log(`[${this.metadata.name}] enabling version ${this.metadata.version}`);
         const dependencies = checkDependencies();
         const missingContainerLib = !dependencies.hasDocker && !dependencies.hasPodman;
         const missingKind = !dependencies.hasKind;
         if (missingContainerLib || missingKind) {
 
-            log(`[${this.metadata.name}] missing dependencies, showing problem reporter instead`);
-            this.devContainerManager = new ProblemReporter(this.metadata);
-
             let missingLibs = getMissingDependencies(dependencies);
-
             let msg = _(`It looks like your computer is missing following libraries: ${missingLibs.join(', ')}\n\nAfter installing them, you'll need to restart your computer.`);
-            this.devContainerManager.setMessage(msg);
+            Main.notifyError(`[${this.metadata.name}] missing dependencies`, msg);
 
-            Main.panel.addToStatusArea(`${this.metadata.name} Problem Reporter`, this.devContainerManager, -1, 'left');
+            // console.log(`[${this.metadata.name}] missing dependencies, showing problem reporter instead`);
+            // this.devContainerManager = new ProblemReporter(this.metadata);
+            
+
+            // this.devContainerManager.setMessage(msg);
+
+            // Main.panel.addToStatusArea(`${this.metadata.name} Problem Reporter`, this.devContainerManager, -1, 'left');
         } else {
             this.devContainerManager = new DevContainerManager();
             this.devContainerManager.addToPanel();
