@@ -14,7 +14,9 @@ class DevContainerManager {
     constructor() {
         this.container = new BaseContainer();
         this.container.addMonitor(new DockerMenu('Docker Containers', 'docker-containers'));
-        this.container.addMonitor(new KindCluster('Kind Clusters', 'kind-clusters'));
+        
+        const hasKind = dependencies.hasKind;
+        hasKind ? this.container.addMonitor(new KindCluster('Kind Clusters', 'kind-clusters')) : Main.notifyError(`[dev-container-manager] missing dependencies`, 'Install kind in order to create and handle the clusters using docker/podman.');
     }
     addToPanel() {
         Main.panel.addToStatusArea('DevContainerManager', this.container, -1, 'left');
@@ -42,8 +44,7 @@ export default class DevContainerManagerExtension extends Extension {
         console.log(`[${this.metadata.name}] enabling version ${this.metadata.version}`);
         const dependencies = checkDependencies();
         const missingContainerLib = !dependencies.hasDocker && !dependencies.hasPodman;
-        const missingKind = !dependencies.hasKind;
-        if (missingContainerLib || missingKind) {
+        if (missingContainerLib) {
 
             let missingLibs = getMissingDependencies(dependencies);
             let msg = _(`It looks like your computer is missing following libraries: ${missingLibs.join(', ')}\n\nAfter installing them, you'll need to restart your computer.`);
