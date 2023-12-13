@@ -1,6 +1,6 @@
 {
   "name": "dev-container-manager",
-  "description": "Gnome Extension to enable cicd/container/kubernetes and cloud resource handling",
+  "description": "Gnome Extension to enable cicd/container/kubernetes and cloud resource handling. you can use docker, podman and use kubernetes clusters with kind.",
   "uuid": "dev-container-manager@devopsnextgenx",
   "settings-schema": "org.gnome.shell.extensions.dev-container-manager",
   "shell-version": [
