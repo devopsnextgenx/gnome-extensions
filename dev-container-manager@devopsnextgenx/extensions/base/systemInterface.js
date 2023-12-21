@@ -2,6 +2,7 @@
 
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 export const dockerCommandsToLabels = {
   start: "Start",
@@ -31,7 +32,7 @@ const REQUIRED_LIBS = ['Docker', 'Podman', 'Kind']
 export const getMissingDependencies = (dependencies) => {
   const missingLibs = [];
 
-  Object.keys(dependencies).forEach(lib=> !dependencies[lib] && REQUIRED_LIBS.includes(`${lib.substring(3)}`) && missingLibs.push(`${lib.substring(3)}`));
+  Object.keys(dependencies).forEach(lib => !dependencies[lib] && REQUIRED_LIBS.includes(`${lib.substring(3)}`) && missingLibs.push(`${lib.substring(3)}`));
 
   return missingLibs;
 }
@@ -132,7 +133,8 @@ export const getContainerCount = async () => {
  * @param {Function} callback A callback that takes the status, command, and stdErr
  */
 export const runDockerCommand = async (command, containerName, callback) => {
-  var cmd = hasXTerminalEmulator
+  let dependencies = checkDependencies();
+  var cmd = dependencies['hasXTerminalEmulator']
     ? ["x-terminal-emulator", "-e", "sh", "-c"]
     : ["gnome-terminal", "--", "sh", "-c"];
   switch (command) {
@@ -160,7 +162,8 @@ export const runDockerCommand = async (command, containerName, callback) => {
  * @param {Function} callback A callback that takes the status, command, and stdErr
  */
 export const runKindCommand = async (command, clusterName, callback) => {
-  let cmd = hasXTerminalEmulator
+  let dependencies = checkDependencies();
+  var cmd = dependencies['hasXTerminalEmulator']
     ? ["x-terminal-emulator", "-e", "sh", "-c"]
     : ["gnome-terminal", "--", "sh", "-c"];
   switch (command) {
