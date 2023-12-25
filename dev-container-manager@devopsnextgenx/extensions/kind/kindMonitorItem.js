@@ -51,8 +51,8 @@ const getStatus = (statusMessage) => {
 };
 
 // Menu entry representing a Kind Cluster
-export const KindMonitorItem = GObject.registerClass(
-    class KindMonitorItem extends St.Widget {
+export const KindClusterItem = GObject.registerClass(
+    class KindClusterItem extends St.Widget {
         _init(clusterName) {
             super._init({
                 reactive: true,

@@ -18,16 +18,65 @@ export const dependencies = {
 };
 
 export const checkDependencies = () => {
+  dependencies['hasYq'] = !!GLib.find_program_in_path("yq");
   dependencies['hasDocker'] = !!GLib.find_program_in_path("docker");
   dependencies['hasPodman'] = !!GLib.find_program_in_path("podman");
   dependencies['hasKind'] = !!GLib.find_program_in_path("kind");
   dependencies['hasKubectl'] = !!GLib.find_program_in_path("kubectl");
   dependencies['hasXTerminalEmulator'] = !!GLib.find_program_in_path("x-terminal-emulator");
 
+  try {
+    const file = getFile("dev-container-manager", ".local/share");
+    file.make_directory_with_parents(null);
+  } catch (error) {
+    console.log(`storage already exists!!!`);
+  }
+
   return dependencies;
 };
 
-const REQUIRED_LIBS = ['Docker', 'Podman', 'Kind']
+export const filterTab = (input) => {
+  return input.includes('\t') ? input.split("\t")[0]:input;
+}
+
+export function notify(msg, details, icon) {
+  const MessageTray = Main.messageTray;
+  let source = new MessageTray.Source("dev-container-manager", icon);
+  let notification = new MessageTray.Notification(source, msg, details);
+  notification.setTransient(false);
+  Main.messageTray.add(source);
+  source.notify(notification);
+}
+
+export const getFilePath = (fileName) => {
+  return GLib.build_filenamev([GLib.get_home_dir(), fileName]);
+};
+export const getFile = (fileName, filePath = ".local/share/dev-container-manager") => {
+  return Gio.File.new_for_path(getFilePath(`${filePath}/${fileName}`));
+}
+export const jsonToYaml = async (content) => {
+  let pOut = await execCommand(["yq", "-y", "-n", content]);
+  
+  return pOut;
+};
+
+export const writeContentToFile = async (content, fileName, filePath = ".local/share/dev-container-manager") => {
+  try {
+    const file = getFile(fileName, filePath);
+    await file.replace_contents_bytes_async(new GLib.Bytes(content), null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null, null);
+  } catch (error) {
+    Main.notify(error.message);
+  }
+}
+
+export const createKindCluster = async (clusterName) => {
+  const clusterConfig = `${GLib.get_home_dir()}/.local/share/dev-container-manager/${clusterName}.yaml`;
+  let pOut = await execCommand(["kind","create","cluster","--name",clusterName,"--config",clusterConfig]);
+  
+  return pOut;
+}
+
+const REQUIRED_LIBS = ['Docker', 'Podman', 'Kind'];
 
 export const getMissingDependencies = (dependencies) => {
   const missingLibs = [];

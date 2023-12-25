@@ -51,6 +51,27 @@
 	padding: 0px 6px;
 }
 
+.node-container {
+	padding: 10px 0px 0px 0px;
+}
+.form-item {
+	padding: 4px;
+}
+.form-item-icon {
+	padding: 6px;
+}
+.form-item-label {
+	padding: 6px;
+}
+.form-item-input {
+	padding: 2px;
+	border-radius: 8px;
+}
+.form-item-button {
+	padding: 6px 3px;
+	margin-top: 3px;
+}
+
 .item-label {
 	padding: 0px 6px;
 	margin-top: 0px;

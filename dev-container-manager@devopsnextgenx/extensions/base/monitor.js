@@ -88,7 +88,6 @@ export const Monitor = GObject.registerClass({
         statusMenu.box.add_child(grid);
         this.menu.addMenuItem(statusMenu);
     }
-
     addMenuRow(widget, col, colSpan, rowSpan) {
         this.lm.attach(widget, col, this.menuRow, colSpan, rowSpan);
         this.menuCol += colSpan;
@@ -97,7 +96,6 @@ export const Monitor = GObject.registerClass({
             this.menuCol = 0;
         }
     }
-
     clearMenu() {
         this.menu.removeAll();
         this.buildMenuBase();

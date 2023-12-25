@@ -2,7 +2,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { BaseContainer } from './extensions/container.js';
 import { DockerMenu } from './extensions/docker/dockerMonitor.js';
-import { KindCluster } from './extensions/kind/kindMonitor.js';
+import { KindMonitor } from './extensions/kind/kindMonitor.js';
 import { checkDependencies, getMissingDependencies } from './extensions/base/systemInterface.js';
 
 const _this = {}
@@ -16,7 +16,7 @@ class DevContainerManager {
         
         const missingKind = !dependencies.hasKind;
         missingKind && Main.notifyError(`[dev-container-manager] missing dependencies`, 'Install kind in order to create and handle the clusters using docker/podman.');
-        !missingKind && this.container.addMonitor(new KindCluster('Kind Clusters', 'kind-clusters'))
+        !missingKind && this.container.addMonitor(new KindMonitor('Kind Clusters', 'kind-clusters'))
     }
     addToPanel() {
         Main.panel.addToStatusArea('DevContainerManager', this.container, -1, 'left');
