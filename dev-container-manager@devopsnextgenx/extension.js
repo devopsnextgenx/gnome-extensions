@@ -49,14 +49,6 @@ export default class DevContainerManagerExtension extends Extension {
             let missingLibs = getMissingDependencies(dependencies);
             let msg = _(`It looks like your computer is missing following libraries: ${missingLibs.join(', ')}\n\nAfter installing them, you'll need to restart your computer.`);
             Main.notifyError(`[${this.metadata.name}] missing dependencies`, msg);
-
-            // console.log(`[${this.metadata.name}] missing dependencies, showing problem reporter instead`);
-            // this.devContainerManager = new ProblemReporter(this.metadata);
-            
-
-            // this.devContainerManager.setMessage(msg);
-
-            // Main.panel.addToStatusArea(`${this.metadata.name} Problem Reporter`, this.devContainerManager, -1, 'left');
         } else {
             this.devContainerManager = new DevContainerManager(dependencies);
             this.devContainerManager.addToPanel();
