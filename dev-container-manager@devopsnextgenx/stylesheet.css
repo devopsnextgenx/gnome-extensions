@@ -68,8 +68,13 @@
 	border-radius: 8px;
 }
 .form-item-button {
-	padding: 6px 3px;
+	padding: 6px 6px;
 	margin-top: 3px;
+}
+.active-context {
+	padding-bottom: 2px;
+	padding-left: 10px;
+	padding-right: 10px;
 }
 
 .item-label {

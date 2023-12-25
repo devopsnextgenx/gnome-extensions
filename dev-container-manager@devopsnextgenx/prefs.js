@@ -27,15 +27,15 @@ export default class DockerContainersPreferences extends ExtensionPreferences {
         const group = new Adw.PreferencesGroup();
         page.add(group);
 
-        const row = new Adw.ActionRow({
+        const refreshInterval = new Adw.ActionRow({
             title: "Container count refresh interval. Set to 0 to disable",
         });
-        group.add(row);
+        group.add(refreshInterval);
 
         const delayInput = this.getIntervalSpinButton();
 
-        row.add_suffix(delayInput);
-        row.activatable_widget = delayInput;
+        refreshInterval.add_suffix(delayInput);
+        refreshInterval.activatable_widget = delayInput;
 
         window.add(page);
     }

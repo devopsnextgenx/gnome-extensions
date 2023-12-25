@@ -1,11 +1,13 @@
 "use strict";
 
-import GLib from 'gi://GLib';
 import St from 'gi://St';
-import GObject from 'gi://GObject';
+import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
 import Clutter from 'gi://Clutter';
+import GObject from 'gi://GObject';
 
-import { PopupMenuItem } from 'resource:///org/gnome/shell/ui/popupMenu.js'
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import { Monitor } from '../base/monitor.js';
 import * as System from '../base/systemInterface.js';
@@ -28,6 +30,11 @@ export const KindMonitor = GObject.registerClass(
 
       this._refreshDelay = this.settings.get_int("refresh-delay");
 
+      this.kcPath = GLib.get_home_dir() + "/.kube/config";
+      let kcFile = Gio.File.new_for_path(this.kcPath);
+      this._monitor = kcFile.monitor(Gio.FileMonitorFlags.NONE, null);
+      this._monitor.connect('changed', this._buildMenu.bind(this));
+      
       this.icon = buildIcon("kind");
       this.addChild(this.icon);
 
@@ -53,7 +60,7 @@ export const KindMonitor = GObject.registerClass(
       );
       this.menu.connect("open-state-changed", this._refreshMenu.bind(this));
       const loading = _("Loading...");
-      this.menu.addMenuItem(new PopupMenuItem(loading));
+      this.menu.addMenuItem(new PopupMenu.PopupMenuItem(loading));
       this._refreshCount();
       if (System.dependencies.hasPodman || System.dependencies.hasDocker) {
         this.show();
@@ -86,7 +93,7 @@ export const KindMonitor = GObject.registerClass(
           this._updateCountLabel(clusters.length);
           this._feedMenu(clusters)
             .catch((e) =>
-              this.menu.addMenuItem(new PopupMenuItem(e.message))
+              this.menu.addMenuItem(new PopupMenu.PopupMenuItem(e.message))
             );
         }
       } catch (e) {
@@ -103,7 +110,7 @@ export const KindMonitor = GObject.registerClass(
         errMsg = _("Please install Kind to use this plugin");
       }
       if (errMsg) {
-        this.menu.addMenuItem(new PopupMenuItem(errMsg));
+        this.menu.addMenuItem(new PopupMenu.PopupMenuItem(errMsg));
         throw new Error(errMsg);
       };
     }
@@ -174,32 +181,32 @@ export const KindMonitor = GObject.registerClass(
       ) {
         this.clearMenu();
         this._kindClusters = kindClusters;
+
+        const config = await System.yamlToJson(this.kcPath);
+        const currentContext = JSON.parse(config)['current-context']
+
         this._kindClusters.forEach((cluster) => {
+          const isActive = currentContext === `kind-${cluster}`;
           const subMenu = new KindClusterItem(
             cluster
             );
-            this.addMenuRow(subMenu, 0, 2, 1);
+            this.addMenuRow(buildIcon(isActive ? 'ball': '', 'active-context', 10), 0, 1, 1);
+            this.addMenuRow(subMenu, 1, 1, 1);
           });
-        this._addClusterNode();
-        if (!this._kindClusters.length) {
-          this.menu.addMenuItem(new PopupMenuItem("No kind clusters detected"));
+          if (!this._kindClusters.length) {
+            this.menu.addMenuItem(new PopupMenu.PopupMenuItem("No kind clusters detected"),0,2,1);
+          }
+          this.addMenuRow(new PopupMenu.PopupSeparatorMenuItem(),0,2,1)
+          this._addClusterNode();
         }
       }
-    }
-    _addClusterNode() {
-      if (System.dependencies.hasYq) {
-        // this.addMenuRow(new PopupMenuItem("Inputs:"), 0, 2, 2);
-        // this.addMenuRow(new PopupMenuItem(" - workers: Number of workers to spawn"), 0, 2, 2);
-        // this.addMenuRow(new PopupMenuItem(" - apiPort: Used to connect kubernetes controller"), 0, 2, 2);
-        // this.addMenuRow(new PopupMenuItem(" - hostHttp: Port on host to connect http requests"), 0, 2, 2);
-        // this.addMenuRow(new PopupMenuItem(" - hostHttps: Port on host to connect https requests"), 0, 2, 2);
-        // this.addMenuRow(new PopupMenuItem(" - podSubnet: Usually 10.2xx.0.0/16"), 0, 2, 2);
-        // this.addMenuRow(new PopupMenuItem(" - serviceSubnet: Usually 10.xx.0.0/16"), 0, 2, 2);
-        this.addMenuRow(new KindClusterNode('kind-node-dev', 'create-kind-node-dev'), 0, 2, 2);
-      } else {
-        this.addMenuRow(new PopupMenuItem("Install 'yq' and 'kind' to allow creating and handling kubernetes clusters with kind."), 0, 2, 2);
-        this.addMenuRow(new PopupMenuItem("- Follow instructions at https://kind.sigs.k8s.io/docs/user/quick-start/#installing-with-a-package-manager"), 0, 2, 2);
-        this.addMenuRow(new PopupMenuItem("- sudo apt install yq -y"), 0, 2, 2);
+      _addClusterNode() {
+        if (System.dependencies.hasYq) {
+          this.addMenuRow(new PopupMenu.PopupMenuItem("Fill Name for the kind cluster and click blue icon to proceed configuring the cluster.\nInputs:\n - workers: Number of workers to spawn\n - apiPort: Used to connect kubernetes controller\n - hostHttp: Port on host to connect http requests\n - hostHttps: Port on host to connect https requests\n - podSubnet: Usually 10.2xx.0.0/16\n - serviceSubnet: Usually 10.xx.0.0/16\n\nOnce input is filled properly, you should be able to click green icon to create cluster"), 0, 2, 1);
+          this.addMenuRow(new PopupMenu.PopupSeparatorMenuItem(),0,2,1)
+          this.addMenuRow(new KindClusterNode('kind-node-dev', 'create-kind-node-dev'), 0, 2, 1);
+        } else {
+        this.addMenuRow(new PopupMenu.PopupMenuItem("Install 'yq' and 'kind' to allow creating and handling kubernetes clusters with kind.\n - Follow instructions at https://kind.sigs.k8s.io/docs/user/quick-start/#installing-with-a-package-manager\n - sudo apt install yq -y"), 0, 2, 1);
       }
     }
   }

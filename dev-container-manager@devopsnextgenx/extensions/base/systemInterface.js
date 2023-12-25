@@ -59,6 +59,11 @@ export const jsonToYaml = async (content) => {
   
   return pOut;
 };
+export const yamlToJson = async (fileName) => {
+  let pOut = await execCommand(["yq", "-r", ".", fileName]);
+  
+  return pOut;
+};
 
 export const writeContentToFile = async (content, fileName, filePath = ".local/share/dev-container-manager") => {
   try {

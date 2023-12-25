@@ -65,6 +65,7 @@ export const KindClusterItem = GObject.registerClass(
                 y_expand: true,
 
             });
+
             let hbox = new St.BoxLayout();
             this.add_child(hbox);
             this.box = hbox;
