@@ -30,7 +30,7 @@ export const KindMonitor = GObject.registerClass(
       this.kcPath = GLib.get_home_dir() + "/.kube/config";
       let kcFile = Gio.File.new_for_path(this.kcPath);
       this._monitor = kcFile.monitor(Gio.FileMonitorFlags.NONE, null);
-      this._monitor.connect('changed', this._buildMenu.bind(this));
+      this._monitor.connect('changed', this._updateContext.bind(this));
       
       this.icon = buildIcon("kind");
       this.addChild(this.icon);
@@ -49,7 +49,11 @@ export const KindMonitor = GObject.registerClass(
       }));
       this._buildMenu();
     }
-
+    async _updateContext() {
+      const config = await System.yamlToJson(this.kcPath);
+      const currentContext = JSON.parse(config)['current-context'];
+      this.newContext = currentContext;
+    }
     _buildMenu() {
       this.settings.connect(
         "changed::refresh-delay",
@@ -172,18 +176,16 @@ export const KindMonitor = GObject.registerClass(
 
     async _feedMenu(kindClusters) {
       await this._check();
-      const config = await System.yamlToJson(this.kcPath);
-      const currentContext = JSON.parse(config)['current-context']
       if (
         !this._kindClusters 
         || kindClusters.length !== this._kindClusters.length
-        || currentContext !== this.currentContext
+        || this.newContext !== this.currentContext
       ) {
         this.clearMenu();
         this._kindClusters = kindClusters;
         this._kindClusters.forEach((cluster) => {
-          const isActive = currentContext === `kind-${cluster}`;
-          isActive && (this.currentContext = currentContext);
+          const isActive = this.newContext === `kind-${cluster}`;
+          isActive && (this.currentContext = this.newContext);
           const subMenu = new KindClusterItem(
             cluster
             );
