@@ -7,15 +7,12 @@ import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
 
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
-import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import { Monitor } from '../base/monitor.js';
 import * as System from '../base/systemInterface.js';
 import { KindClusterItem } from '../kind/kindMonitorItem.js';
 import { buildIcon } from '../base/ui-component-store.js';
 import { KindClusterNode } from './kindCluster.js';
-
-const isContainerUp = (container) => container.status.indexOf("Up") > -1;
 
 // Kind icon as panel menu
 export const KindMonitor = GObject.registerClass(
@@ -175,18 +172,18 @@ export const KindMonitor = GObject.registerClass(
 
     async _feedMenu(kindClusters) {
       await this._check();
+      const config = await System.yamlToJson(this.kcPath);
+      const currentContext = JSON.parse(config)['current-context']
       if (
-        !this._kindClusters ||
-        kindClusters.length !== this._kindClusters.length
+        !this._kindClusters 
+        || kindClusters.length !== this._kindClusters.length
+        || currentContext !== this.currentContext
       ) {
         this.clearMenu();
         this._kindClusters = kindClusters;
-
-        const config = await System.yamlToJson(this.kcPath);
-        const currentContext = JSON.parse(config)['current-context']
-
         this._kindClusters.forEach((cluster) => {
           const isActive = currentContext === `kind-${cluster}`;
+          isActive && (this.currentContext = currentContext);
           const subMenu = new KindClusterItem(
             cluster
             );
