@@ -53,7 +53,7 @@ export const KindClusterNode = GObject.registerClass({
       this.formInput = {};
       const uuid = UUID();
       this.formInput[`${uuid}`]={uuid: uuid};
-      this.clusterName = this.buildInput('clusterName', 'Cluster Name', this.formInput[`${uuid}`]);
+      this.clusterName = this.buildInput('clusterName', 'Cluster Name', this.formInput[`${uuid}`], 'dev');
       const createClusterFormBind = this.createClusterNodeForm.bind(this, uuid);
       this.addRowItem(
         this.clusterName,
@@ -64,22 +64,22 @@ export const KindClusterNode = GObject.registerClass({
       const clusterName = this.formInput[`${uuid}`].clusterName;
       this.addRowItem(this.buildLabel(`Configuration for ${clusterName}`), this.buildIcon('docker-container-symbolic', 'status-running'));
       
-      this.workers = this.buildInput('workers', 'Worker Count: 3', this.formInput[`${uuid}`]);
-      this.apiPort = this.buildInput('apiPort', 'Api Port: 6443', this.formInput[`${uuid}`]);
+      this.workers = this.buildInput('workers', 'Worker Count: 3', this.formInput[`${uuid}`], '1');
+      this.apiPort = this.buildInput('apiPort', 'Api Port: 6443', this.formInput[`${uuid}`], '6443');
       this.addRowItem(
         this.workers,
         this.apiPort
       );
 
-      this.hostHttp = this.buildInput('hostHttp', 'cluster http: 80 -> 80', this.formInput[`${uuid}`]);
-      this.hostHttps = this.buildInput('hostHttps', 'cluster http: 443 -> 443', this.formInput[`${uuid}`]);
+      this.hostHttp = this.buildInput('hostHttp', 'cluster http: 80 -> 80', this.formInput[`${uuid}`], '30080');
+      this.hostHttps = this.buildInput('hostHttps', 'cluster http: 443 -> 443', this.formInput[`${uuid}`], '30443');
       this.addRowItem(
         this.hostHttp,
         this.hostHttps
       );
 
-      this.podSubnet = this.buildInput('podSubnet', '10.244.0.0/16', this.formInput[`${uuid}`]);
-      this.serviceSubnet = this.buildInput('serviceSubnet', '10.96.0.0/16', this.formInput[`${uuid}`]);
+      this.podSubnet = this.buildInput('podSubnet', '10.244.0.0/16', this.formInput[`${uuid}`], "10.244.0.0/16");
+      this.serviceSubnet = this.buildInput('serviceSubnet', '10.96.0.0/16', this.formInput[`${uuid}`], "10.96.0.0/16");
       this.addRowItem(
         this.podSubnet,
         this.serviceSubnet
@@ -125,8 +125,8 @@ export const KindClusterNode = GObject.registerClass({
       for (let workerCount = 0; workerCount < clusterNode.workers;workerCount++) {
         clusterConfig.nodes.push({"role": "worker"});
       }
-      // notify("hello","Test message", 'folder-symbolic');
-      Main.notifyError(`Creating kind cluster ${name}.`, `Check log at .local/share/dev-container-manager/${clusterNode.name}.log`);
+      Main.notify(`Creating kind cluster ${name}.`);
+      // Main.notifyError(`Creating kind cluster ${name}.`, `Check log at .local/share/dev-container-manager/${clusterNode.name}.log`);
       const yamlContent = await jsonToYaml(JSON.stringify(clusterConfig));
       await writeContentToFile(yamlContent, `${clusterNode.name}.yaml`, ".local/share/dev-container-manager");
       await writeContentToFile(JSON.stringify(clusterNode), `${clusterNode.name}.json`, ".local/share/dev-container-manager");
@@ -143,22 +143,24 @@ export const KindClusterNode = GObject.registerClass({
         style_class: 'form-item-label',
       })
     }
-    buildInput(inputName, hintText, formInput) {
+    buildInput(inputName, hintText, formInput, text) {
       const input = new St.Entry({
         style_class: 'form-item-input',
         name: inputName,
         hint_text: _(hintText),
         track_hover: true,
-        can_focus: true
+        can_focus: true,
+        text: _(text)
       });
       const inputText = input.clutter_text;
+      formInput[`${inputName}`] = text;
 
-      const handleInput = (origin, event) => {
-        const inputValue = `${origin.get_text()}${event.get_key_unicode()}`;
+      const handleInput = (origin) => {
+        const inputValue = `${origin.get_text()}`;
         formInput[`${inputName}`] = inputValue;
       };
       const handleInputBind = handleInput.bind(this);
-      inputText.connect('key-press-event', handleInputBind);
+      inputText.connect('key-release-event', handleInputBind);
       return input;
     }
     addRow(widget, col, colSpan = 1, rowSpan = 1) {
