@@ -57,7 +57,7 @@ export default class DevContainerManagerExtension extends Extension {
 
     disable() {
         _this['extension'] = null;
-        this.devContainerManager.destroy();
+        this.devContainerManager && this.devContainerManager.destroy();
         this.devContainerManager = null;
     }
 }
