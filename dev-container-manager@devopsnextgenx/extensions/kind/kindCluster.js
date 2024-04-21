@@ -1,30 +1,17 @@
 import St from 'gi://St';
 import Atk from 'gi://Atk';
-import Gio from 'gi://Gio';
-import GLib from 'gi://GLib';
 import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-import { getExtensionObject } from "../../extension.js";
-import { buildIcon } from '../base/ui-component-store.js';
-import { ActionIcon } from '../base/actionIcon.js';
-import { createKindCluster, filterTab, jsonToYaml, notify, writeContentToFile } from '../base/systemInterface.js';
+import { actionIcon, buildIcon } from '../base/ui-component-store.js';
+import { createKindCluster, filterTab, jsonToYaml, writeContentToFile } from '../base/systemInterface.js';
 
 const MENU_COLUMNS = 2;
 function UUID() {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
-
-const actionIcon = (clusterName, name = "empty", style = {"buttonSize":16, "class":"action-button"}, action) => {
-  const actionIconWidget = new ActionIcon(`${clusterName}-${name}`, `${clusterName}-${name}`);
-  let button = new St.Button({ style_class: `form-item-button button` });
-  button.child = buildIcon(name, `${style.class}`, style.buttonSize);
-  actionIconWidget.addChild(button);
-  action && button.connect('clicked', action);
-  return actionIconWidget;
-};
 
 export const KindClusterNode = GObject.registerClass({
     Properties: {
@@ -48,12 +35,6 @@ export const KindClusterNode = GObject.registerClass({
         this.menuCol = 0;
         this.numMenuCols = MENU_COLUMNS;
 
-        this.settings = getExtensionObject().getSettings(
-          "org.gnome.shell.extensions.dev-container-manager"
-        );
-  
-        this._buttonSize = this.settings.get_int("button-size");
-
         this.buildNodeForm();
     }
     buildNodeForm() {
@@ -64,7 +45,7 @@ export const KindClusterNode = GObject.registerClass({
       const createClusterFormBind = this.createClusterNodeForm.bind(this, uuid);
       this.addRowItem(
         this.clusterName,
-        actionIcon('clusterName','docker-container-symbolic', {'buttonSize': this._buttonSize,'class': 'status-paused'}, createClusterFormBind),
+        actionIcon('clusterName','docker-container-symbolic', {'class': 'status-paused'}, {fn: createClusterFormBind}),
       );
     }
     createClusterNodeForm(uuid) {
@@ -95,7 +76,7 @@ export const KindClusterNode = GObject.registerClass({
       const createClusterNodeConfigurationBind = this.createClusterNodeConfiguration.bind(this, uuid);
       this.addRowItem(
         this.label,
-        actionIcon('clusterName','docker-container-symbolic', {'buttonSize': this._buttonSize,'class':'status-running'}, createClusterNodeConfigurationBind),
+        actionIcon('clusterName','docker-container-symbolic', {'buttonSize': this._buttonSize,'class':'status-running'}, {fn: createClusterNodeConfigurationBind}),
       );
     }
     async createClusterNodeConfiguration(uuid) {

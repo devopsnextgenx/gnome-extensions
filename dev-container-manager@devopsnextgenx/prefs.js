@@ -22,7 +22,7 @@ export default class DockerContainersPreferences extends ExtensionPreferences {
         return spin;
     };
 
-    getButtonSize = () => {
+    getIconSize = () => {
         const settings = this.getSettings()
         const spin = new Gtk.SpinButton({
             valign: Gtk.Align.CENTER,
@@ -36,7 +36,7 @@ export default class DockerContainersPreferences extends ExtensionPreferences {
                 page_size: 0,
             }),
         });
-        settings.bind("button-size", spin, "value", Gio.SettingsBindFlags.DEFAULT);
+        settings.bind("icon-size", spin, "value", Gio.SettingsBindFlags.DEFAULT);
         return spin;
     };
 
@@ -55,15 +55,16 @@ export default class DockerContainersPreferences extends ExtensionPreferences {
         refreshInterval.add_suffix(delayInput);
         refreshInterval.activatable_widget = delayInput;
 
-        const buttonSize = new Adw.ActionRow({
-            title: "Button Size",
+        const iconSize = new Adw.ActionRow({
+            title: "Icon Size",
         });
-        group.add(buttonSize);
+        
+        group.add(iconSize);
 
-        const buttonSizeInput = this.getButtonSize();
+        const iconSizeInput = this.getIconSize();
 
-        buttonSize.add_suffix(buttonSizeInput);
-        buttonSize.activatable_widget = buttonSizeInput;
+        iconSize.add_suffix(iconSizeInput);
+        iconSize.activatable_widget = iconSizeInput;
         
         window.add(page);
     }

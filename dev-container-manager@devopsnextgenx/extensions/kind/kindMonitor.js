@@ -27,7 +27,7 @@ export const KindMonitor = GObject.registerClass(
 
       this.settings.connectObject(
         "changed::refresh-delay", this._reloadPref.bind(this),
-        "changed::button-size", this._reloadPref.bind(this),
+        "changed::icon-size", this._reloadPref.bind(this),
         this
       );
 

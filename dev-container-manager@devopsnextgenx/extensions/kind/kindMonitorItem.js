@@ -6,11 +6,8 @@ import GObject from 'gi://GObject';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-import { buildIcon } from '../base/ui-component-store.js';
-import { ActionIcon } from '../base/actionIcon.js';
+import { actionIcon } from '../base/ui-component-store.js';
 import * as System from '../base/systemInterface.js'
-import { getExtensionObject } from "../../extension.js";
-
 
 const _kindAction = (clusterName, clusterCommand) => {
     System.runKindCommand(clusterCommand, clusterName, (ok, command, err) => {
@@ -24,32 +21,6 @@ const _kindAction = (clusterName, clusterCommand) => {
         }
     });
 }
-
-const actionIcon = (clusterName, name = "empty",  style = {"buttonSize":16, "class":"action-button"}, action) => {
-    const actionIconWidget = new ActionIcon(`${clusterName}-${name}`, `${clusterName}-${name}`);
-    let button = new St.Button({ style_class: `${name != 'empty' && action ? 'button' : 'empty-icon'} action-button` });
-    button.child = buildIcon(name, `${style.class}`, action ? style.buttonSize : style.buttonSize + 4);
-    actionIconWidget.addChild(button);
-    action && button.connect('clicked', () => _kindAction(clusterName, action)); // 
-    return actionIconWidget;
-}
-
-
-/**
- * Get the status of a container from the status message obtained with the docker command
- *
- * @param {String} statusMessage The status message
- *
- * @return {String} The status in ['running', 'paused', 'stopped']
- */
-const getStatus = (statusMessage) => {
-    let status = "undefined";
-    if (statusMessage.indexOf("Exited") > -1) status = "stopped";
-    if (statusMessage.indexOf("Up") > -1) status = "running";
-    if (statusMessage.indexOf("Paused") > -1) status = "paused";
-
-    return status;
-};
 
 // Menu entry representing a Kind Cluster
 export const KindClusterItem = GObject.registerClass(
@@ -67,19 +38,14 @@ export const KindClusterItem = GObject.registerClass(
 
             });
 
-            this.settings = getExtensionObject().getSettings(
-            "org.gnome.shell.extensions.dev-container-manager"
-            );
-    
-            this._buttonSize = this.settings.get_int("button-size");
-        
             let hbox = new St.BoxLayout();
             this.add_child(hbox);
             this.box = hbox;
 
-            this.addChild(actionIcon(clusterName, "docker-container-symbolic", {"buttonSize":this._buttonSize, "class":"status-running"}));
+            this.addChild(actionIcon(clusterName, "docker-container-symbolic", { "class":"status-running" }));
 
-            this.addChild(actionIcon(clusterName, "docker-container-stop-symbolic", {"buttonSize":this._buttonSize, "class":"status-stopped"}, "delete"));
+            let fnBind = _kindAction.bind(null, clusterName, "delete");
+            this.addChild(actionIcon(clusterName, "docker-container-stop-symbolic", { "class":"status-stopped" }, {fn: fnBind}));
 
             this.addChild(new St.Label({ text: _(clusterName), style_class: `item-label` }));
 
