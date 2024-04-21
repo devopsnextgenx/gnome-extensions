@@ -9,3 +9,8 @@ zip extension:
 
 commit message:
   git add . && git commit -m "{{message}}" && git push
+
+schema extension:
+    #!/usr/bin/env bash
+    cd {{extension}}/schema
+    glib-compile-schemas .
