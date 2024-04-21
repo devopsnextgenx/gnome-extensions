@@ -25,6 +25,12 @@ export const KindMonitor = GObject.registerClass(
       this._updateCountLabel = this._updateCountLabel.bind(this);
       this._timeout = null;
 
+      this.settings.connectObject(
+        "changed::refresh-delay", this._reloadPref.bind(this),
+        "changed::button-size", this._reloadPref.bind(this),
+        this
+      );
+
       this._refreshDelay = this.settings.get_int("refresh-delay");
 
       this.kcPath = GLib.get_home_dir() + "/.kube/config";
@@ -55,10 +61,6 @@ export const KindMonitor = GObject.registerClass(
       this.newContext = currentContext;
     }
     _buildMenu() {
-      this.settings.connect(
-        "changed::refresh-delay",
-        this._refreshCount
-      );
       this.menu.connect("open-state-changed", this._refreshMenu.bind(this));
       const loading = _("Loading...");
       this.menu.addMenuItem(new PopupMenu.PopupMenuItem(loading));
@@ -87,12 +89,12 @@ export const KindMonitor = GObject.registerClass(
 
     // Refresh  the menu everytime the user opens it
     // It allows to have up-to-date information on docker containers
-    async _refreshMenu() {
+    async _refreshMenu(force) {
       try {
-        if (this.menu.isOpen) {
+        if (this.menu.isOpen || force) {
           const clusters = await System.getKindClusters();
           this._updateCountLabel(clusters.length);
-          this._feedMenu(clusters)
+          this._feedMenu(clusters, force)
             .catch((e) =>
               this.menu.addMenuItem(new PopupMenu.PopupMenuItem(e.message))
             );
@@ -174,9 +176,10 @@ export const KindMonitor = GObject.registerClass(
       }
     }
 
-    async _feedMenu(kindClusters) {
+    async _feedMenu(kindClusters, force) {
       await this._check();
       if (
+        force ||
         !this._kindClusters 
         || kindClusters.length !== this._kindClusters.length
         || this.newContext !== this.currentContext

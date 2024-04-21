@@ -6,6 +6,7 @@ import GObject from 'gi://GObject';
 import Clutter from 'gi://Clutter';
 
 import { PopupMenuItem } from 'resource:///org/gnome/shell/ui/popupMenu.js'
+import * as CheckBox from 'resource:///org/gnome/shell/ui/checkBox.js';
 
 import { Monitor } from '../base/monitor.js';
 import { buildIcon } from '../base/ui-component-store.js';
@@ -25,7 +26,16 @@ export const DockerMenu = GObject.registerClass(
       this._updateCountLabel = this._updateCountLabel.bind(this);
       this._timeout = null;
 
+      this.settings.connectObject(
+        "changed::refresh-delay", this._reloadPref.bind(this),
+        "changed::button-size", this._reloadPref.bind(this),
+        this
+      );
+
       this._refreshDelay = this.settings.get_int("refresh-delay");
+
+      this.showInactive = true;
+      this.isTogglePending = false;
 
       this.icon = buildIcon("docker");
       this.addChild(this.icon);
@@ -47,10 +57,6 @@ export const DockerMenu = GObject.registerClass(
     }
 
     _buildMenu() {
-      this.settings.connect(
-        "changed::refresh-delay",
-        this._refreshCount
-      );
       this.menu.connect("open-state-changed", this._refreshMenu.bind(this));
       const loading = _("Loading...");
       this.menu.addMenuItem(new PopupMenuItem(loading));
@@ -80,14 +86,14 @@ export const DockerMenu = GObject.registerClass(
 
     // Refresh  the menu everytime the user opens it
     // It allows to have up-to-date information on docker containers
-    async _refreshMenu() {
+    async _refreshMenu(force) {
       try {
-        if (this.menu.isOpen) {
+        if (this.menu.isOpen || force) {
           const containers = await System.getContainers();
           this._updateCountLabel(
             containers.filter((container) => isContainerUp(container)).length
           );
-          this._feedMenu(containers)
+          this._feedMenu(containers, force)
             .catch((e) =>
               this.menu.addMenuItem(new PopupMenuItem(e.message))
             );
@@ -163,10 +169,31 @@ export const DockerMenu = GObject.registerClass(
         this.clearLoop();
       }
     }
+    async _addToggleOptions() {
+      let optionsGrid = new St.Widget({
+          style_class: 'menu-grid',
+          layout_manager: new Clutter.GridLayout({ orientation: Clutter.Orientation.VERTICAL }),
+      });
+      let hbox = new St.BoxLayout();
+      optionsGrid.add_child(hbox);
+      const toggle = new CheckBox.CheckBox(
+        'Show Inactive containers'
+      );
+      toggle.checked = this.showInactive;
+      toggle.connect('clicked', () => {
+        this.showInactive = toggle.checked;
+        this.isTogglePending = true;
+        this._refreshMenu();
+      });
+      hbox.add(toggle);
+      this.addMenuRow(optionsGrid, 0, 2, 1);
+    }
 
-    async _feedMenu(dockerContainers) {
+    async _feedMenu(dockerContainers, force) {
       await this._check();
       if (
+        force||
+        this.isTogglePending||
         !this._containers ||
         dockerContainers.length !== this._containers.length ||
         dockerContainers.some((currContainer, i) => {
@@ -180,15 +207,18 @@ export const DockerMenu = GObject.registerClass(
         })
       ) {
         this.clearMenu();
+        this._addToggleOptions();
         this._containers = dockerContainers;
         this._containers.forEach((container) => {
           const subMenu = new DockerMonitorItem(
             container.project,
             container.name,
-            container.status
+            container.status,
+            this.showInactive
           );
           this.addMenuRow(subMenu, 0, 2, 1);
         });
+        this.isTogglePending = false;
         if (!this._containers.length) {
           this.menu.addMenuItem(new PopupMenuItem("No containers detected"));
         }

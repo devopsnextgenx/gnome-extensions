@@ -4,6 +4,9 @@
     <key name="refresh-delay" type="i">
       <default>2</default>
     </key>
+    <key name="button-size" type="i">
+      <default>16</default>
+    </key>
     <key name="show-docker" type="b">
       <default>true</default>
       <summary>Show the Docker containers</summary>

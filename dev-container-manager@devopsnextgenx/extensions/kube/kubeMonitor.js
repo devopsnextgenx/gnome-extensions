@@ -25,6 +25,12 @@ export const KubeCluster = GObject.registerClass(
       this._updateCountLabel = this._updateCountLabel.bind(this);
       this._timeout = null;
 
+      this.settings.connectObject(
+        "changed::refresh-delay", this._reloadPref.bind(this),
+        "changed::button-size", this._reloadPref.bind(this),
+        this
+      );
+
       this._refreshDelay = this.settings.get_int("refresh-delay");
 
       this.icon = buildIcon("google-kube");
@@ -48,10 +54,6 @@ export const KubeCluster = GObject.registerClass(
     }
 
     _buildMenu() {
-      this.settings.connect(
-        "changed::refresh-delay",
-        this._refreshCount
-      );
       this.menu.connect("open-state-changed", this._refreshMenu.bind(this));
       const loading = _("Loading...");
       this.menu.addMenuItem(new PopupMenuItem(loading));
@@ -81,14 +83,14 @@ export const KubeCluster = GObject.registerClass(
 
     // Refresh  the menu everytime the user opens it
     // It allows to have up-to-date information on docker containers
-    async _refreshMenu() {
+    async _refreshMenu(force) {
       try {
-        if (this.menu.isOpen) {
+        if (this.menu.isOpen || force) {
           const containers = await System.getContainers();
           this._updateCountLabel(
             containers.filter((container) => isContainerUp(container)).length
           );
-          this._feedMenu(containers)
+          this._feedMenu(containers, force)
             .catch((e) =>
               this.menu.addMenuItem(new PopupMenuItem(e.message))
             );
@@ -165,9 +167,10 @@ export const KubeCluster = GObject.registerClass(
       }
     }
 
-    async _feedMenu(dockerContainers) {
+    async _feedMenu(dockerContainers, force) {
       await this._check();
       if (
+        force||
         !this._containers ||
         dockerContainers.length !== this._containers.length ||
         dockerContainers.some((currContainer, i) => {

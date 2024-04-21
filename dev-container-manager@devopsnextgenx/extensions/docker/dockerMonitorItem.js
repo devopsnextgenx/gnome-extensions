@@ -9,7 +9,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import { buildIcon } from '../base/ui-component-store.js';
 import { ActionIcon } from '../base/actionIcon.js';
 import * as System from '../base/systemInterface.js'
-
+import { getExtensionObject } from "../../extension.js";
 
 const _dockerAction = (containerName, dockerCommand) => {
   System.runDockerCommand(dockerCommand, containerName, (ok, command, err) => {
@@ -24,10 +24,10 @@ const _dockerAction = (containerName, dockerCommand) => {
   });
 }
 
-const actionIcon = (containerName, name = "empty", styleClass = "action-button", action) => {
+const actionIcon = (containerName, name = "empty", style = {"buttonSize":16, "class":"action-button"}, action) => {
   const actionIconWidget = new ActionIcon(`${containerName}-${name}`, `${containerName}-${name}`);
   let button = new St.Button({ style_class: `${name != 'empty' && action ? 'button' : 'empty-icon'} action-button` });
-  button.child = buildIcon(name, `${styleClass}`, action ? "16" : "20");
+  button.child = buildIcon(name, `${style.class}`, action ? style.buttonSize : style.buttonSize + 4);
   actionIconWidget.addChild(button);
   action && button.connect('clicked', () => _dockerAction(containerName, action)); // 
   return actionIconWidget;
@@ -53,7 +53,7 @@ const getStatus = (statusMessage) => {
 // Menu entry representing a Docker container
 export const DockerMonitorItem = GObject.registerClass(
   class DockerMonitorItem extends St.Widget {
-    _init(projectName, containerName, containerStatusMessage) {
+    _init(projectName, containerName, containerStatusMessage, showInactive) {
       super._init({
         reactive: true,
         can_focus: true,
@@ -65,47 +65,54 @@ export const DockerMonitorItem = GObject.registerClass(
         y_expand: true,
 
       });
+
+      this.settings = getExtensionObject().getSettings(
+        "org.gnome.shell.extensions.dev-container-manager"
+      );
+
+      this._buttonSize = this.settings.get_int("button-size");
+
       let hbox = new St.BoxLayout();
       this.add_child(hbox);
       this.box = hbox;
 
       const status = getStatus(containerStatusMessage);
+      if (showInactive || status === "running") {
+        this.addChild(actionIcon(containerName, "docker-container-symbolic", {"buttonSize":this._buttonSize, "class":`status-${status}`}));
+        this.addChild(actionIcon(containerName, "docker-container-logs-symbolic", {"buttonSize":this._buttonSize, "class":"status-undefined"}, "logs"));
 
-      this.addChild(actionIcon(containerName, "docker-container-symbolic", `status-${status}`));
-      this.addChild(actionIcon(containerName, "docker-container-logs-symbolic", "status-undefined", "logs"));
+        switch (status) {
+          case "running":
+            this.addChild(actionIcon(containerName, "docker-container-exec-symbolic", {"buttonSize":this._buttonSize, "class":"status-exec"}, "exec"));
+            this.addChild(actionIcon(containerName, "docker-container-pause-symbolic", {"buttonSize":this._buttonSize, "class":"status-unpause"}, "pause"));
+            this.addChild(actionIcon(containerName, "docker-container-restart-symbolic", {"buttonSize":this._buttonSize, "class":"status-paused"}, "restart"));
+            this.addChild(actionIcon(containerName, "docker-container-stop-symbolic", {"buttonSize":this._buttonSize, "class":"status-stopped"}, "stop"));
+            break;
 
-      switch (status) {
-        case "running":
-          this.addChild(actionIcon(containerName, "docker-container-exec-symbolic", "status-exec", "exec"));
-          this.addChild(actionIcon(containerName, "docker-container-pause-symbolic", "status-unpause", "pause"));
-          this.addChild(actionIcon(containerName, "docker-container-restart-symbolic", "status-paused", "restart"));
-          this.addChild(actionIcon(containerName, "docker-container-stop-symbolic", "status-stopped", "stop"));
-          break;
+          case "stopped":
+            this.addChild(actionIcon(containerName, "docker-container-start-symbolic", {"buttonSize":this._buttonSize, "class":"status-running"}, "start"));
+            this.addChild(actionIcon(containerName));
+            this.addChild(actionIcon(containerName));
+            this.addChild(actionIcon(containerName));
+            break;
 
-        case "stopped":
-          this.addChild(actionIcon(containerName, "docker-container-start-symbolic", "status-running", "start"));
-          this.addChild(actionIcon(containerName));
-          this.addChild(actionIcon(containerName));
-          this.addChild(actionIcon(containerName));
-          break;
+          case "paused":
+            this.addChild(actionIcon(containerName, "docker-container-start-symbolic", {"buttonSize":this._buttonSize, "class":"status-running"}, "unpause"));
+            this.addChild(actionIcon(containerName));
+            this.addChild(actionIcon(containerName));
+            this.addChild(actionIcon(containerName));
+            break;
 
-        case "paused":
-          this.addChild(actionIcon(containerName, "docker-container-start-symbolic", "status-running", "unpause"));
-          this.addChild(actionIcon(containerName));
-          this.addChild(actionIcon(containerName));
-          this.addChild(actionIcon(containerName));
-          break;
+          default:
+            this.addChild(actionIcon(containerName));
+            this.addChild(actionIcon(containerName));
+            this.addChild(actionIcon(containerName));
+            this.addChild(actionIcon(containerName));
+            break;
+        }
 
-        default:
-          this.addChild(actionIcon(containerName));
-          this.addChild(actionIcon(containerName));
-          this.addChild(actionIcon(containerName));
-          this.addChild(actionIcon(containerName));
-          break;
+        this.addChild(new St.Label({ text: _(containerName), style_class: `item-label` }));
       }
-
-      this.addChild(new St.Label({ text: _(containerName), style_class: `item-label` }));
-
     }
     addChild(child) {
       if (this.box) {

@@ -35,7 +35,7 @@
 .empty-icon {
 	padding: 0px;
 	margin: 0px;
-	width: 16px;
+	/* width: 16px; */
 }
 
 .action-button {

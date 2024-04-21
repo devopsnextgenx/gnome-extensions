@@ -17,10 +17,10 @@ function UUID() {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
-const actionIcon = (clusterName, name = "empty", styleClass = "action-button", action) => {
+const actionIcon = (clusterName, name = "empty", style = {"buttonSize":16, "class":"action-button"}, action) => {
   const actionIconWidget = new ActionIcon(`${clusterName}-${name}`, `${clusterName}-${name}`);
   let button = new St.Button({ style_class: `form-item-button button` });
-  button.child = buildIcon(name, `${styleClass}`);
+  button.child = buildIcon(name, `${style.class}`, style.buttonSize);
   actionIconWidget.addChild(button);
   action && button.connect('clicked', action);
   return actionIconWidget;
@@ -47,6 +47,13 @@ export const KindClusterNode = GObject.registerClass({
         this.menuRow = 0;
         this.menuCol = 0;
         this.numMenuCols = MENU_COLUMNS;
+
+        this.settings = getExtensionObject().getSettings(
+          "org.gnome.shell.extensions.dev-container-manager"
+        );
+  
+        this._buttonSize = this.settings.get_int("button-size");
+
         this.buildNodeForm();
     }
     buildNodeForm() {
@@ -57,7 +64,7 @@ export const KindClusterNode = GObject.registerClass({
       const createClusterFormBind = this.createClusterNodeForm.bind(this, uuid);
       this.addRowItem(
         this.clusterName,
-        actionIcon('clusterName','docker-container-symbolic', 'status-paused', createClusterFormBind),
+        actionIcon('clusterName','docker-container-symbolic', {'buttonSize': this._buttonSize,'class': 'status-paused'}, createClusterFormBind),
       );
     }
     createClusterNodeForm(uuid) {
@@ -88,7 +95,7 @@ export const KindClusterNode = GObject.registerClass({
       const createClusterNodeConfigurationBind = this.createClusterNodeConfiguration.bind(this, uuid);
       this.addRowItem(
         this.label,
-        actionIcon('clusterName','docker-container-symbolic', 'status-running', createClusterNodeConfigurationBind),
+        actionIcon('clusterName','docker-container-symbolic', {'buttonSize': this._buttonSize,'class':'status-running'}, createClusterNodeConfigurationBind),
       );
     }
     async createClusterNodeConfiguration(uuid) {

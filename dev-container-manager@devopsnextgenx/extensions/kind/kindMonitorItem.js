@@ -9,6 +9,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import { buildIcon } from '../base/ui-component-store.js';
 import { ActionIcon } from '../base/actionIcon.js';
 import * as System from '../base/systemInterface.js'
+import { getExtensionObject } from "../../extension.js";
 
 
 const _kindAction = (clusterName, clusterCommand) => {
@@ -24,10 +25,10 @@ const _kindAction = (clusterName, clusterCommand) => {
     });
 }
 
-const actionIcon = (clusterName, name = "empty", styleClass = "action-button", action) => {
+const actionIcon = (clusterName, name = "empty",  style = {"buttonSize":16, "class":"action-button"}, action) => {
     const actionIconWidget = new ActionIcon(`${clusterName}-${name}`, `${clusterName}-${name}`);
     let button = new St.Button({ style_class: `${name != 'empty' && action ? 'button' : 'empty-icon'} action-button` });
-    button.child = buildIcon(name, `${styleClass}`, action ? "16" : "20");
+    button.child = buildIcon(name, `${style.class}`, action ? style.buttonSize : style.buttonSize + 4);
     actionIconWidget.addChild(button);
     action && button.connect('clicked', () => _kindAction(clusterName, action)); // 
     return actionIconWidget;
@@ -66,13 +67,19 @@ export const KindClusterItem = GObject.registerClass(
 
             });
 
+            this.settings = getExtensionObject().getSettings(
+            "org.gnome.shell.extensions.dev-container-manager"
+            );
+    
+            this._buttonSize = this.settings.get_int("button-size");
+        
             let hbox = new St.BoxLayout();
             this.add_child(hbox);
             this.box = hbox;
 
-            this.addChild(actionIcon(clusterName, "docker-container-symbolic", "status-running"));
+            this.addChild(actionIcon(clusterName, "docker-container-symbolic", {"buttonSize":this._buttonSize, "class":"status-running"}));
 
-            this.addChild(actionIcon(clusterName, "docker-container-stop-symbolic", "status-stopped", "delete"));
+            this.addChild(actionIcon(clusterName, "docker-container-stop-symbolic", {"buttonSize":this._buttonSize, "class":"status-stopped"}, "delete"));
 
             this.addChild(new St.Label({ text: _(clusterName), style_class: `item-label` }));
 

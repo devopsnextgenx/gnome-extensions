@@ -45,7 +45,9 @@ export const Monitor = GObject.registerClass({
         this.setMenu(new PopupMenu.PopupMenu(this, 0.5, St.Side.TOP, 0));
         this.buildMenuBase();
     }
-
+    async _reloadPref() {
+        this._refreshMenu(true);
+    }
     addChild(child) {
         if (this.box) {
             this.box.add_child(child);
