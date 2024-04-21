@@ -4,16 +4,6 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-export const dockerCommandsToLabels = {
-  start: "Start",
-  restart: "Restart",
-  stop: "Stop",
-  pause: "Pause",
-  unpause: "Unpause",
-  exec: "Exec",
-  logs: "Logs",
-};
-
 export const dependencies = {
 };
 
@@ -196,13 +186,20 @@ export const runDockerCommand = async (command, containerName, callback) => {
       cmd = [...cmd, "'docker exec -it " + containerName + " sh; exec $SHELL'"];
       GLib.spawn_command_line_async(cmd.join(" "));
       break;
-    case "logs":
+    case "rm":
       cmd = [
         ...cmd,
-        "'docker logs -f --tail 2000 " + containerName + "; exec $SHELL' ",
+        "'docker rm -f " + containerName + "; exec $SHELL' ",
       ];
       GLib.spawn_command_line_async(cmd.join(" "));
       break;
+    case "logs":
+        cmd = [
+          ...cmd,
+          "'docker logs -f --tail 2000 " + containerName + "; exec $SHELL' ",
+        ];
+        GLib.spawn_command_line_async(cmd.join(" "));
+        break;
     default:
       cmd = ["docker", command, containerName];
       execCommand(cmd, callback);

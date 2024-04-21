@@ -76,14 +76,14 @@ export const DockerMonitorItem = GObject.registerClass(
             this.addChild(actionIcon(containerName, "docker-container-start-symbolic", {"class":"status-running"}, {fn: fnBind("start")}));
             this.addChild(actionIcon(containerName));
             this.addChild(actionIcon(containerName));
-            this.addChild(actionIcon(containerName));
+            this.addChild(actionIcon(containerName, "trash-delete", {"class":"status-stopped"}, {fn: fnBind("rm")}));
             break;
 
           case "paused":
             this.addChild(actionIcon(containerName, "docker-container-start-symbolic", {"class":"status-running"}, {fn: fnBind("unpause")}));
             this.addChild(actionIcon(containerName));
             this.addChild(actionIcon(containerName));
-            this.addChild(actionIcon(containerName));
+            this.addChild(actionIcon(containerName, "trash-delete", {"class":"status-stopped"}, {fn: fnBind("rm")}));
             break;
 
           default:

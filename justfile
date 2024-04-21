@@ -12,5 +12,5 @@ commit message:
 
 schema extension:
     #!/usr/bin/env bash
-    cd {{extension}}/schema
+    cd {{extension}}/schemas
     glib-compile-schemas .
