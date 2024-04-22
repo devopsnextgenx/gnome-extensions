@@ -7,7 +7,7 @@ import GObject from 'gi://GObject';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import * as System from '../base/systemInterface.js'
-import { actionIcon } from '../base/ui-component-store.js';
+import { actionIcon, buildLabel } from '../base/ui-component-store.js';
 
 const _dockerAction = (containerName, dockerCommand) => {
   System.runDockerCommand(dockerCommand, containerName, (ok, command, err) => {
@@ -93,8 +93,8 @@ export const DockerMonitorItem = GObject.registerClass(
             this.addChild(actionIcon(containerName));
             break;
         }
-
-        this.addChild(new St.Label({ text: _(containerName), style_class: `item-label` }));
+        
+        this.addChild(buildLabel(containerName));
       }
     }
     addChild(child) {

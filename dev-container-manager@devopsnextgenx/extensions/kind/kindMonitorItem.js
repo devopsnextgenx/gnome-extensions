@@ -6,7 +6,7 @@ import GObject from 'gi://GObject';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-import { actionIcon } from '../base/ui-component-store.js';
+import { actionIcon, buildLabel } from '../base/ui-component-store.js';
 import * as System from '../base/systemInterface.js'
 
 const _kindAction = (clusterName, clusterCommand) => {
@@ -45,10 +45,10 @@ export const KindClusterItem = GObject.registerClass(
             this.addChild(actionIcon(clusterName, "docker-container-symbolic", { "class":"status-running" }));
 
             let fnBind = _kindAction.bind(null, clusterName, "delete");
+            
             this.addChild(actionIcon(clusterName, "docker-container-stop-symbolic", { "class":"status-stopped" }, {fn: fnBind}));
 
-            this.addChild(new St.Label({ text: _(clusterName), style_class: `item-label` }));
-
+            this.addChild(buildLabel(clusterName));
         }
         addChild(child) {
             if (this.box) {

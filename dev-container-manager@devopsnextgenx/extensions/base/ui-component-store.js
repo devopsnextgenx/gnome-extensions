@@ -39,6 +39,18 @@ export const buildIcon = (iconName, styleClass = "system-status-icon", iconSize)
   });
 };
 
+export const buildLabel = (labelText, styleClass = 'item-label', style) => {
+  let settings = getExtensionObject().getSettings(
+    "org.gnome.shell.extensions.dev-container-manager"
+  );
+  let iconSize = settings.get_int("icon-size");
+  let padding = (iconSize-16)/2;
+
+  style = style ? style : `padding: ${padding}px 6px;`;
+
+  return new St.Label({ text: _(`${labelText}`), style_class: `${styleClass}` , style: `${style}` });
+}
+
 export default {
   actionIcon,
   buildIcon

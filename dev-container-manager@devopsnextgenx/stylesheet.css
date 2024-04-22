@@ -35,7 +35,6 @@
 .empty-icon {
 	padding: 0px;
 	margin: 0px;
-	/* width: 16px; */
 }
 
 .action-button {
@@ -78,6 +77,5 @@
 }
 
 .item-label {
-	padding: 0px 6px;
 	margin-top: 0px;
 }
