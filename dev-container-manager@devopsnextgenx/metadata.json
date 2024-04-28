@@ -7,7 +7,7 @@
   "name": "docker podman kind kubernetes cluster container manager",
   "settings-schema": "org.gnome.shell.extensions.dev-container-manager",
   "shell-version": [
-    "44", "45", "46"
+    "45", "46"
   ],
   "url": "https://github.com/devopsnextgenx/gnome-extensions",
   "uuid": "dev-container-manager@devopsnextgenx",
