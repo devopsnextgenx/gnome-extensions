@@ -12,9 +12,9 @@ import { actionIcon, buildLabel } from '../base/ui-component-store.js';
 const _dockerAction = (containerName, dockerCommand) => {
   System.runDockerCommand(dockerCommand, containerName, (ok, command, err) => {
     if (ok) {
-      Main.notify("Command `" + command + "` successful");
+      Main.notify("GNOME Extension: dev-container-manager", `Command ${command} successful!!!`);
     } else {
-      let errMsg = _("Error occurred when running `" + command + "`");
+      let errMsg = _(`Error occurred when running ${command}`);
       Main.notifyError(errMsg);
       logError(errMsg);
       logError(err);

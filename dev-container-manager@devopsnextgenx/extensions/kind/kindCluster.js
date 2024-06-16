@@ -113,14 +113,15 @@ export const KindClusterNode = GObject.registerClass({
       for (let workerCount = 0; workerCount < clusterNode.workers;workerCount++) {
         clusterConfig.nodes.push({"role": "worker"});
       }
-      Main.notify(`Creating kind cluster ${name}.`);
-      // Main.notifyError(`Creating kind cluster ${name}.`, `Check log at .local/share/dev-container-manager/${clusterNode.name}.log`);
+      Main.notify("GNOME Extension: dev-container-manager", `Creating kind cluster ${name}. Check configuration yaml/json at .local/share/dev-container-manager/`);
+      // Main.notifyError("GNOME Extension: dev-container-manager", `Check log at .local/share/dev-container-manager/${clusterNode.name}.log`);
       const yamlContent = await jsonToYaml(JSON.stringify(clusterConfig));
       await writeContentToFile(yamlContent, `${clusterNode.name}.yaml`, ".local/share/dev-container-manager");
       await writeContentToFile(JSON.stringify(clusterNode), `${clusterNode.name}.json`, ".local/share/dev-container-manager");
       const pOut = await createKindCluster(name);
       
       await writeContentToFile(pOut, `${clusterNode.name}.log`, ".local/share/dev-container-manager");
+      Main.notify("GNOME Extension: dev-container-manager", `Finished kind cluster ${name} command!!!.`);
     }
     buildIcon(iconName) {
       return buildIcon(iconName, 'form-item-icon');

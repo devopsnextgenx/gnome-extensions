@@ -12,7 +12,7 @@ import * as System from '../base/systemInterface.js'
 const _kindAction = (clusterName, clusterCommand) => {
     System.runKindCommand(clusterCommand, clusterName, (ok, command, err) => {
         if (ok) {
-            Main.notify("Command `" + command + "` successful");
+            Main.notify("GNOME Extension: dev-container-manager", `Command ${command} successful!!!`);
         } else {
             let errMsg = _("Error occurred when running `" + command + "`");
             Main.notifyError(errMsg);

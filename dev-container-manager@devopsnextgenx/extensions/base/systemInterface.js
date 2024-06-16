@@ -60,7 +60,7 @@ export const writeContentToFile = async (content, fileName, filePath = ".local/s
     const file = getFile(fileName, filePath);
     await file.replace_contents_bytes_async(new GLib.Bytes(content), null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null, null);
   } catch (error) {
-    Main.notify(error.message);
+    Main.notify("GNOME Extension: dev-container-manager", error.message);
   }
 }
 
@@ -273,7 +273,7 @@ export async function execCommand(
     });
   } catch (e) {
     logError(e);
-    throw e;
+    reject(e);
   }
   return execProm;
 }
