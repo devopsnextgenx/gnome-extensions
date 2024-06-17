@@ -11,7 +11,7 @@ import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import { Monitor } from '../base/monitor.js';
 import * as System from '../base/systemInterface.js';
 import { KindClusterItem } from '../kind/kindMonitorItem.js';
-import { actionIcon, buildIcon } from '../base/ui-component-store.js';
+import { buildIcon } from '../base/ui-component-store.js';
 import { KindClusterNode } from './kindCluster.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
@@ -120,7 +120,7 @@ export const KindMonitor = GObject.registerClass(
     }
 
     _checkServices() {
-      let errMsg = undefined;
+      let errMsg;
       if (!System.dependencies.hasPodman && !System.dependencies.hasDocker) {
         errMsg = _("Please install Docker or Podman to use this plugin");
       }
