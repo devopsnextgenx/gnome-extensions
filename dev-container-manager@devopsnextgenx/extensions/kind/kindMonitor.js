@@ -54,6 +54,7 @@ export const KindMonitor = GObject.registerClass(
         y_align: Clutter.ActorAlign.CENTER,
       }));
       this._buildMenu();
+      this._updateContext();
     }
     async _updateContext() {
       const config = await System.yamlToJson(this.kcPath);

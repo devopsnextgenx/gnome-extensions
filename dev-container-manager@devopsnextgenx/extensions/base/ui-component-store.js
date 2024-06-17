@@ -14,8 +14,7 @@ export const actionIcon = (containerName, name = "empty", style = { "class":"act
   
   let button = new St.Button({ style_class: `${name != 'empty' && action ? 'button' : 'empty-icon'} action-button`,  });
   style.iconSize = style.iconSize || settings.get_int("icon-size");
-  let iconSize = action ? style.iconSize : style.iconSize - 6;
-  button.child = buildIcon(name, `${style.class}`, iconSize);
+  button.child = buildIcon(name, `${style.class}`, style.iconSize);
   actionIconWidget.addChild(button);
   action && button.connect('clicked', () => action.fn()); // 
   return actionIconWidget;
