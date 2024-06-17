@@ -211,13 +211,19 @@ export const runDockerCommand = async (command, containerName, callback) => {
  */
 export const runKindCommand = async (command, clusterName, callback) => {
   let dependencies = checkDependencies();
-  var cmd = dependencies['hasXTerminalEmulator']
+  let cmd = dependencies['hasXTerminalEmulator']
     ? ["x-terminal-emulator", "-e", "sh", "-c"]
     : ["gnome-terminal", "--", "sh", "-c"];
   switch (command) {
     case "delete":
       cmd = [
         "kind", "delete", "clusters", clusterName
+      ];
+      execCommand(cmd, callback);
+      break;
+    case "switch":
+      cmd = [
+        "kubectl", "config", "use-context", clusterName
       ];
       execCommand(cmd, callback);
       break;

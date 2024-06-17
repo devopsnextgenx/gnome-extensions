@@ -11,8 +11,22 @@ import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import { Monitor } from '../base/monitor.js';
 import * as System from '../base/systemInterface.js';
 import { KindClusterItem } from '../kind/kindMonitorItem.js';
-import { buildIcon } from '../base/ui-component-store.js';
+import { actionIcon, buildIcon } from '../base/ui-component-store.js';
 import { KindClusterNode } from './kindCluster.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+
+const _kindAction = (clusterName, clusterCommand) => {
+  System.runKindCommand(clusterCommand, clusterName, (ok, command, err) => {
+      if (ok) {
+          Main.notify("GNOME Extension: dev-container-manager", `Command ${command} successful!!!`);
+      } else {
+          let errMsg = _("Error occurred when running `" + command + "`");
+          Main.notifyError(errMsg);
+          logError(errMsg);
+          logError(err);
+      }
+  });
+}
 
 // Kind icon as panel menu
 export const KindMonitor = GObject.registerClass(
@@ -188,27 +202,35 @@ export const KindMonitor = GObject.registerClass(
         this.clearMenu();
         this._kindClusters = kindClusters;
         this._kindClusters.forEach((cluster) => {
-          const isActive = this.newContext === `kind-${cluster}`;
-          isActive && (this.currentContext = this.newContext);
-          const subMenu = new KindClusterItem(
-            cluster
+            const isActive = this.newContext === `kind-${cluster}`;
+            isActive && (this.currentContext = this.newContext);
+
+            const fnBind = _kindAction.bind(null, `kind-${cluster}`, "switch");
+            const button = new St.Button({ style_class: `button action-button`,  });
+            button.child = buildIcon(isActive ? 'ball': 'ball-empty', `${isActive ? 'active-context ': 'inactive-context'}`, 10);
+            button.connect('clicked', () => fnBind());
+            this.addMenuRow(button, 0, 1, 1);
+
+            const subMenu = new KindClusterItem(
+              cluster
             );
-            this.addMenuRow(buildIcon(isActive ? 'ball': '', 'active-context', 10), 0, 1, 1);
             this.addMenuRow(subMenu, 1, 1, 1);
-          });
-          if (!this._kindClusters.length) {
-            this.menu.addMenuItem(new PopupMenu.PopupMenuItem("No kind clusters detected"),0,2,1);
-          }
-          this.addMenuRow(new PopupMenu.PopupSeparatorMenuItem(),0,2,1)
-          this._addClusterNode();
+        });
+          
+        if (!this._kindClusters.length) {
+          this.menu.addMenuItem(new PopupMenu.PopupMenuItem("No kind clusters detected"),0,2,1);
         }
+
+        this.addMenuRow(new PopupMenu.PopupSeparatorMenuItem(),0,2,1)
+        this._addClusterNode();
       }
-      _addClusterNode() {
-        if (System.dependencies.hasYq) {
-          this.addMenuRow(new PopupMenu.PopupMenuItem("Fill Name for the kind cluster and click blue icon to proceed configuring the cluster.\nInputs:\n - workers: Number of workers to spawn\n - apiPort: Used to connect kubernetes controller\n - hostHttp: Port on host to connect http requests\n - hostHttps: Port on host to connect https requests\n - podSubnet: Usually 10.2xx.0.0/16\n - serviceSubnet: Usually 10.xx.0.0/16\n\nOnce input is filled properly, you should be able to click green icon to create cluster"), 0, 2, 1);
-          this.addMenuRow(new PopupMenu.PopupSeparatorMenuItem(),0,2,1)
-          this.addMenuRow(new KindClusterNode('kind-node-dev', 'create-kind-node-dev'), 0, 2, 1);
-        } else {
+    }
+    _addClusterNode() {
+      if (System.dependencies.hasYq) {
+        this.addMenuRow(new PopupMenu.PopupMenuItem("Fill Name for the kind cluster and click blue icon to proceed configuring the cluster.\nInputs:\n - workers: Number of workers to spawn\n - apiPort: Used to connect kubernetes controller\n - hostHttp: Port on host to connect http requests\n - hostHttps: Port on host to connect https requests\n - podSubnet: Usually 10.2xx.0.0/16\n - serviceSubnet: Usually 10.xx.0.0/16\n\nOnce input is filled properly, you should be able to click green icon to create cluster"), 0, 2, 1);
+        this.addMenuRow(new PopupMenu.PopupSeparatorMenuItem(),0,2,1)
+        this.addMenuRow(new KindClusterNode('kind-node-dev', 'create-kind-node-dev'), 0, 2, 1);
+      } else {
         this.addMenuRow(new PopupMenu.PopupMenuItem("Install 'yq' and 'kind' to allow creating and handling kubernetes clusters with kind.\n - Follow instructions at https://kind.sigs.k8s.io/docs/user/quick-start/#installing-with-a-package-manager\n - sudo apt install yq -y"), 0, 2, 1);
       }
     }

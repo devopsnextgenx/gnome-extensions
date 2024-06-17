@@ -11,16 +11,17 @@ export const actionIcon = (containerName, name = "empty", style = { "class":"act
   let settings = getExtensionObject().getSettings(
     "org.gnome.shell.extensions.dev-container-manager"
   );
+  style.iconSize = style.iconSize || settings.get_int("icon-size");
   
   let button = new St.Button({ style_class: `${name != 'empty' && action ? 'button' : 'empty-icon'} action-button`,  });
-  style.iconSize = style.iconSize || settings.get_int("icon-size");
+  
   button.child = buildIcon(name, `${style.class}`, style.iconSize);
   actionIconWidget.addChild(button);
   action && button.connect('clicked', () => action.fn()); // 
   return actionIconWidget;
 }
 
-export const buildIcon = (iconName, styleClass = "system-status-icon", iconSize) => {
+export const buildIcon = (iconName, styleClass = "system-status-icon", iconSize = 10) => {
   const gicon = Gio.icon_new_for_string(
     `${getExtensionObject().path}/icons/${iconName}.svg`
   );

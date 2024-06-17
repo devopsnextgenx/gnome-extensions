@@ -74,6 +74,13 @@
 	padding-bottom: 2px;
 	padding-left: 10px;
 	padding-right: 10px;
+	color: #00b0ff;
+}
+
+.inactive-context {
+	padding-bottom: 2px;
+	padding-left: 10px;
+	padding-right: 10px;
 }
 
 .item-label {
