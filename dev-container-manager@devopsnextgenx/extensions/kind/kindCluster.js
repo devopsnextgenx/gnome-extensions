@@ -45,7 +45,7 @@ export const KindClusterNode = GObject.registerClass({
       const createClusterFormBind = this.createClusterNodeForm.bind(this, uuid);
       this.addRowItem(
         this.clusterName,
-        actionIcon('clusterName','docker-container-symbolic', {'class': 'status-paused'}, {fn: createClusterFormBind}),
+        actionIcon('clusterName','docker-container-symbolic', {'class': 'status-paused', 'styleText': `padding: 8px 6px 4px 6px;`}, {fn: createClusterFormBind}),
       );
     }
     createClusterNodeForm(uuid) {

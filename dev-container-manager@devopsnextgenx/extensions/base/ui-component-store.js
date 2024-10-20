@@ -5,7 +5,7 @@ import { ActionIcon } from '../base/actionIcon.js';
 
 import { getExtensionObject } from "../../extension.js";
 
-export const actionIcon = (containerName, name = "empty", style = { "class":"action-button" }, action) => {
+export const actionIcon = (containerName, name = "empty", style = { "class":"action-button", "styleText": "padding: 6px 6px;" }, action) => {
   const actionIconWidget = new ActionIcon(`${containerName}-${name}`, `${containerName}-${name}`);
 
   let settings = getExtensionObject().getSettings(
@@ -13,7 +13,7 @@ export const actionIcon = (containerName, name = "empty", style = { "class":"act
   );
   style.iconSize = style.iconSize || settings.get_int("icon-size");
   
-  let button = new St.Button({ style_class: `${name != 'empty' && action ? 'button' : 'empty-icon'} action-button`,  });
+  let button = new St.Button({ style_class: `${name != 'empty' && action ? 'button' : 'empty-icon'} action-button`, style: `${style.styleText}` });
   
   button.child = buildIcon(name, `${style.class}`, style.iconSize);
   actionIconWidget.addChild(button);
