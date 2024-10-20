@@ -5,7 +5,7 @@
       <default>2</default>
     </key>
     <key name="icon-size" type="i">
-      <default>16</default>
+      <default>25</default>
     </key>
     <key name="show-docker" type="b">
       <default>true</default>
