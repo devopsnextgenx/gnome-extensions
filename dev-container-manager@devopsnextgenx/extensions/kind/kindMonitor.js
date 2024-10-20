@@ -52,7 +52,7 @@ export const KindMonitor = GObject.registerClass(
       this._monitor = kcFile.monitor(Gio.FileMonitorFlags.NONE, null);
       this._monitor.connect('changed', this._updateContext.bind(this));
       
-      this.icon = buildIcon("kind");
+      this.icon = buildIcon("kind", undefined, 16);
       this.addChild(this.icon);
 
       const loading = _(`Loading...`,);

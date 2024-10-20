@@ -37,7 +37,7 @@ export const DockerMenu = GObject.registerClass(
       this.showInactive = true;
       this.isTogglePending = false;
 
-      this.icon = buildIcon("docker");
+      this.icon = buildIcon("docker", undefined, 16);
       this.addChild(this.icon);
 
       const loading = _("Loading...");
