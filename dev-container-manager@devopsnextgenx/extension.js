@@ -3,6 +3,7 @@ import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { BaseContainer } from './extensions/container.js';
 import { DockerMenu } from './extensions/docker/dockerMonitor.js';
 import { KindMonitor } from './extensions/kind/kindMonitor.js';
+import { OllamaMonitor } from './extensions/ollama/ollamaMonitor.js';
 import { checkDependencies, getMissingDependencies } from './extensions/base/systemInterface.js';
 
 const _this = {}
@@ -16,7 +17,10 @@ class DevContainerManager {
         
         const missingKind = !dependencies.hasKind;
         missingKind && Main.notifyError(`[dev-container-manager] missing dependencies`, 'Install kind in order to create and handle the clusters using docker/podman.');
-        !missingKind && this.container.addMonitor(new KindMonitor('Kind Clusters', 'kind-clusters'))
+        !missingKind && this.container.addMonitor(new KindMonitor('Kind Clusters', 'kind-clusters'));
+        const missingOllama = !dependencies.hasOllama;
+        missingOllama && Main.notifyError(`[dev-container-manager] missing dependencies`, 'Install Ollama and download models to run and monitor local AI models. cmd: "curl -fsSL https://ollama.com/install.sh | sh"');
+        this.container.addMonitor(new OllamaMonitor('Ollama', 'Llama'));
     }
     addToPanel() {
         Main.panel.addToStatusArea('DevContainerManager', this.container, -1, 'left');

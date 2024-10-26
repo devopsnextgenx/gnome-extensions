@@ -5,7 +5,7 @@ import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/ex
 
 export default class DockerContainersPreferences extends ExtensionPreferences {
     getIntervalSpinButton = () => {
-        const settings = this.getSettings()
+        const settings = this.getSettings();
         const spin = new Gtk.SpinButton({
             valign: Gtk.Align.CENTER,
             climb_rate: 10,
@@ -23,7 +23,7 @@ export default class DockerContainersPreferences extends ExtensionPreferences {
     };
 
     getIconSize = () => {
-        const settings = this.getSettings()
+        const settings = this.getSettings();
         const spin = new Gtk.SpinButton({
             valign: Gtk.Align.CENTER,
             climb_rate: 10,
@@ -67,6 +67,34 @@ export default class DockerContainersPreferences extends ExtensionPreferences {
         iconSize.activatable_widget = iconSizeInput;
         
         window.add(page);
+
+        const settings = this.getSettings();
+
+        const groupOllama = new Adw.PreferencesGroup({
+            title: 'Ollama Connection',
+            description: 'Configure the connections to Ollama',
+        });
+        page.add(groupOllama);
+
+        // Create a new preferences row
+        const url_row = new Adw.EntryRow({
+            title: 'ollama url',
+            text: settings.get_string('url'),
+            
+            // subtitle: _('Whether to show the panel indicator'),
+        });
+        groupOllama.add(url_row);
+        settings.bind('url', url_row, 'active',  Gio.SettingsBindFlags.DEFAULT);
+
+
+        // Create a new preferences row
+        const bin_row = new Adw.EntryRow({
+            title: 'ollama command',
+            text: settings.get_string('command'),
+            // subtitle: _('Whether to show the panel indicator'),
+        });
+        groupOllama.add(bin_row);
+        settings.bind('command', bin_row, 'active',  Gio.SettingsBindFlags.DEFAULT);
     }
 
 }

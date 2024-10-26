@@ -2,7 +2,9 @@
 
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
+import Soup from 'gi://Soup';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import { getExtensionObject } from "../../extension.js";
 
 export const dependencies = {
 };
@@ -12,6 +14,7 @@ export const checkDependencies = () => {
   dependencies['hasDocker'] = !!GLib.find_program_in_path("docker");
   dependencies['hasPodman'] = !!GLib.find_program_in_path("podman");
   dependencies['hasKind'] = !!GLib.find_program_in_path("kind");
+  dependencies['hasOllama'] = !!GLib.find_program_in_path("ollama");
   dependencies['hasKubectl'] = !!GLib.find_program_in_path("kubectl");
   dependencies['hasXTerminalEmulator'] = !!GLib.find_program_in_path("x-terminal-emulator");
 
@@ -106,6 +109,15 @@ export const isDockerRunning = async () => {
 };
 
 /**
+ * Check if ollama daemon is running
+ * @return {Boolean} whether ollama daemon is running or not
+ */
+export const isOllamaRunning = async () => {
+  const cmdResult = await execCommand(["/bin/ps", "efa"]);
+  return cmdResult.search(/ollama/) >= 0;
+};
+
+/**
  * Get an array of containers
  * @return {Array} The array of containers as { project, name, status }
  */
@@ -127,6 +139,48 @@ export const getContainers = async () => {
     })));
 
 };
+
+/**
+ * Get an array of Models
+ * @return {Array} The array of models
+ */
+export const getModels = async () => {
+  const host = getExtensionObject().getSettings("org.gnome.shell.extensions.dev-container-manager").get_string('url');
+  const ollamaApi = `http://${ host }/api`
+  let httpSession = new Soup.Session();
+  let modelList = Soup.Message.new('GET', `${ollamaApi}/tags`);
+  let psList = Soup.Message.new('GET', `${ollamaApi}/ps`);
+  let models = [];
+  let modelsRunning = [];
+  let utf8decoder = new TextDecoder(); // default 'utf-8' or 'utf8'
+  try {
+      let res = httpSession.send_and_read(modelList, null);
+      let raw_data = utf8decoder.decode(res.get_data())
+      models = JSON.parse(raw_data)['models'];
+      res = httpSession.send_and_read(psList, null);
+      raw_data = utf8decoder.decode(res.get_data())
+      modelsRunning = JSON.parse(raw_data)['models'];
+
+      for (let i in models) {
+        models[i].status = modelsRunning.some(mr => mr.name == models[i].name) ? "Up" : "Down";
+      }
+    } catch(err) {
+      models.push({
+        name: "No models found",
+        status: "NA"
+      });
+    }
+
+  return models.map((model) => {
+    return {
+      name: model.name,
+      status: model.status
+    }
+  });
+
+};
+
+
 
 export const getKindClusters = () => {
   return new Promise(async (resolve, reject) => {
@@ -171,6 +225,38 @@ export const getContainerCount = async () => {
 };
 
 /**
+ * Get the number of models
+ * @return {Number} The number of running models
+ */
+export const getModelCount = async () => {
+  let psOut = await execCommand(["ollama", "ps"]);
+
+  let models = psOut.split('\n').filter((line) => line.trim().length).map((line) => {
+    const [name, status] = line.split(' ');
+    return {
+      name,
+      status,
+    }
+  });
+  const rModels = models.length-1;
+
+  psOut = await execCommand(["ollama", "list"]);
+
+  models = psOut.split('\n').filter((line) => line.trim().length).map((line) => {
+    const [name, status] = line.split(' ');
+    return {
+      name,
+      status,
+    }
+  });
+
+  const aModels = models.length-1;
+
+  return `${rModels}/${aModels}`;
+
+};
+
+/**
  * Run a Docker command
  * @param {String} command The command to run
  * @param {String} containerName The container
@@ -178,7 +264,7 @@ export const getContainerCount = async () => {
  */
 export const runDockerCommand = async (command, containerName, callback) => {
   let dependencies = checkDependencies();
-  var cmd = dependencies['hasXTerminalEmulator']
+  let cmd = dependencies['hasXTerminalEmulator']
     ? ["x-terminal-emulator", "-e", "sh", "-c"]
     : ["gnome-terminal", "--", "sh", "-c"];
   switch (command) {
@@ -201,6 +287,42 @@ export const runDockerCommand = async (command, containerName, callback) => {
       cmd = ["docker", command, containerName];
       execCommand(cmd, callback);
   }
+};
+
+/**
+ * Run a Ollama command
+ * @param {String} command The command to run
+ * @param {String} model The model
+ * @param {Function} callback A callback that takes the status, command, and stdErr
+ */
+export const runOllamaCommand = async (command, model, callback) => {
+  let dependencies = checkDependencies();
+  let cmd = dependencies['hasXTerminalEmulator']
+    ? ["x-terminal-emulator", "-e", "sh", "-c"]
+    : ["gnome-terminal", "--", "sh", "-c"];
+  let settings = getExtensionObject().getSettings(
+      "org.gnome.shell.extensions.dev-container-manager"
+  );
+  let ollamaCmd = settings.get_string('command');
+  let spawn = false;
+  switch (command) {
+    case "show":
+      cmd = [...cmd, "'" + ollamaCmd + " show " + model + "; exec $SHELL'"];
+      spawn = true;
+      break;
+    case "run":
+      cmd = [ollamaCmd, "run", model];
+      break;
+    case "stop":
+      cmd = [ollamaCmd, "stop", model];
+      break;
+    case "rm":
+      cmd = [ollamaCmd, "rm", model];
+        break;
+    default:
+      cmd = [ollamaCmd, command, model];
+  }
+  spawn ? GLib.spawn_command_line_async(cmd.join(" ")) : execCommand(cmd, callback);
 };
 
 /**

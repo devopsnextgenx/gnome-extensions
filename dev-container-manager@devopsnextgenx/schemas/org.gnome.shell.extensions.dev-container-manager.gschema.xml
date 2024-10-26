@@ -17,5 +17,11 @@
       <summary>Show the Kind Clusters</summary>
       <description>Lists Kind Clusters and Nodes.</description>
     </key>
+    <key name="url" type="s">
+      <default>"localhost:11434"</default>
+    </key>
+    <key name="command" type="s">
+      <default>"ollama"</default>
+    </key>
   </schema>
 </schemalist>
