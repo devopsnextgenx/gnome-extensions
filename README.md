@@ -15,6 +15,8 @@ cp gnome-debug.desktop ~/.local/share/applications
 
 [![dev-container-manager](./dev-container-manager@devopsnextgenx/dev-container-manager.png)](https://youtu.be/Ah-LQxtOHak)
 
+[![dev-container-manager](./dev-container-manager@devopsnextgenx/ollama.png)](https://youtu.be/mMjJ08jSmGo)
+
 ## Like this Extension?
 
 You can support my work on [ko-fi](https://ko-fi.com/devopsnextgenx).
