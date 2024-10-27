@@ -14,10 +14,10 @@ export const actionIcon = (containerName, name = "empty", style = { "class":"act
   style.iconSize = style.iconSize || settings.get_int("icon-size");
   
   let button = new St.Button({ style_class: `${name != 'empty' && action ? 'button' : 'empty-icon'} action-button`, style: `${style.styleText}` });
-  
+  style.iconSize = name == "empty" ? 12 : style.iconSize;
   button.child = buildIcon(name, `${style.class}`, style.iconSize);
   actionIconWidget.addChild(button);
-  action && button.connect('clicked', () => action.fn()); // 
+  action && button.connect('clicked', () => action.fn());
   return actionIconWidget;
 }
 

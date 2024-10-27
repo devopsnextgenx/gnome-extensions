@@ -15,6 +15,24 @@ import { DockerMonitorItem } from './dockerMonitorItem.js';
 
 const isContainerUp = (container) => container.status.indexOf("Up") > -1;
 
+/**
+ * Get the status of a container from the status message obtained with the docker command
+ *
+ * @param {String} statusMessage The status message
+ *
+ * @return {String} The status in ['running', 'paused', 'stopped']
+ */
+const getStatus = (statusMessage) => {
+  let status = "undefined";
+  if (statusMessage.indexOf("Exited") > -1) status = "stopped";
+  if (statusMessage.indexOf("Up") > -1) status = "running";
+  if (statusMessage.indexOf("Paused") > -1) status = "paused";
+
+  return status;
+};
+
+const activeStatus = ["running", "paused"];
+
 // Docker icon as panel menu
 export const DockerMenu = GObject.registerClass(
   class DockerMenu extends Monitor {
@@ -202,11 +220,20 @@ export const DockerMenu = GObject.registerClass(
         this.clearMenu();
         await this._addToggleOptions();
         this._containers = dockerContainers;
-        this._containers.forEach((container) => {
+        this._containers.filter((container) => activeStatus.includes(getStatus(container.status))).forEach((container) => {
           const subMenu = new DockerMonitorItem(
             container.project,
             container.name,
-            container.status,
+            getStatus(container.status),
+            this.showInactive
+          );
+          this.addMenuRow(subMenu, 0, 2, 1);
+        });
+        this._containers.filter((container) => !activeStatus.includes(getStatus(container.status))).forEach((container) => {
+          const subMenu = new DockerMonitorItem(
+            container.project,
+            container.name,
+            getStatus(container.status),
             this.showInactive
           );
           this.addMenuRow(subMenu, 0, 2, 1);

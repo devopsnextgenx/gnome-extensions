@@ -22,26 +22,11 @@ const _dockerAction = (containerName, dockerCommand) => {
   });
 }
 
-/**
- * Get the status of a container from the status message obtained with the docker command
- *
- * @param {String} statusMessage The status message
- *
- * @return {String} The status in ['running', 'paused', 'stopped']
- */
-const getStatus = (statusMessage) => {
-  let status = "undefined";
-  if (statusMessage.indexOf("Exited") > -1) status = "stopped";
-  if (statusMessage.indexOf("Up") > -1) status = "running";
-  if (statusMessage.indexOf("Paused") > -1) status = "paused";
-
-  return status;
-};
 
 // Menu entry representing a Docker container
 export const DockerMonitorItem = GObject.registerClass(
   class DockerMonitorItem extends St.Widget {
-    _init(projectName, containerName, containerStatusMessage, showInactive) {
+    _init(projectName, containerName, status, showInactive) {
       super._init({
         reactive: true,
         can_focus: true,
@@ -58,7 +43,6 @@ export const DockerMonitorItem = GObject.registerClass(
       this.add_child(hbox);
       this.box = hbox;
 
-      const status = getStatus(containerStatusMessage);
       if (showInactive || status === "running") {
         let fnBind = (action) => { return _dockerAction.bind(null, containerName, action) };
         this.addChild(actionIcon(containerName, "docker-container-symbolic", {"class":`status-${status}`}));
