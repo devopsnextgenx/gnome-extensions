@@ -43,7 +43,7 @@ export const DockerMonitorItem = GObject.registerClass(
       this.add_child(hbox);
       this.box = hbox;
 
-      if (showInactive || status === "running") {
+      if (showInactive || ["running", "paused"].includes(status)) {
         let fnBind = (action) => { return _dockerAction.bind(null, containerName, action) };
         this.addChild(actionIcon(containerName, "docker-container-symbolic", {"class":`status-${status}`}));
         this.addChild(actionIcon(containerName, "docker-container-logs-symbolic", {"class":"status-undefined"}, {fn: fnBind("logs")}));
