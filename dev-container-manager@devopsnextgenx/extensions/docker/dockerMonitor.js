@@ -170,12 +170,6 @@ export const DockerMenu = GObject.registerClass(
       }
     }
     async _addToggleOptions() {
-      let optionsGrid = new St.Widget({
-          style_class: 'menu-grid',
-          layout_manager: new Clutter.GridLayout({ orientation: Clutter.Orientation.VERTICAL }),
-      });
-      let hbox = new St.BoxLayout();
-      optionsGrid.add_child(hbox);
       const toggle = new CheckBox.CheckBox(
         'Show Inactive containers'
       );
@@ -185,8 +179,7 @@ export const DockerMenu = GObject.registerClass(
         this.isTogglePending = true;
         this._refreshMenu();
       });
-      hbox.add(toggle);
-      this.addMenuRow(optionsGrid, 0, 2, 1);
+      this.addMenuRow(toggle, 0, 2, 1);
     }
 
     async _feedMenu(dockerContainers, force) {
@@ -207,7 +200,7 @@ export const DockerMenu = GObject.registerClass(
         })
       ) {
         this.clearMenu();
-        this._addToggleOptions();
+        await this._addToggleOptions();
         this._containers = dockerContainers;
         this._containers.forEach((container) => {
           const subMenu = new DockerMonitorItem(
