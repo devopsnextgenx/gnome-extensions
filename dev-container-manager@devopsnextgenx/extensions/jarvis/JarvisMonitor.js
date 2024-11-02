@@ -146,6 +146,8 @@ export const Jarvis = GObject.registerClass(
                 style: 'text-wrap: wrap'
             });
             
+            this._addInstructionBox('llmMessage', `Switch to a different llm model by using Ollama extention, by changing blue dot!`, "#ff0000");
+            
             this._loadHistory();
 
             this.chatView = new St.ScrollView({
@@ -158,6 +160,29 @@ export const Jarvis = GObject.registerClass(
             this.layout.add_child(this.chatView);
             this.layout.add_child(entryBox);
             global.stage.set_key_focus(this.chatInput);
+        }
+        _addInstructionBox(type, text, textColor) {
+            let box = new St.BoxLayout({
+                vertical: true,
+                style_class: `${type}-box`,
+                style: `padding: 5px !important;`
+            });
+            
+            let label = new St.Label({
+                style_class: type,
+                style: `color: ${textColor}; font-size: smaller;`,
+                y_expand: true,
+                reactive: true
+            });
+    
+            label.clutter_text.single_line_mode = false;
+            label.clutter_text.line_wrap        = true;
+            label.clutter_text.line_wrap_mode   = Pango.WrapMode.WORD_CHAR;
+            label.clutter_text.ellipsize        = Pango.EllipsizeMode.NONE;
+            label.clutter_text.set_markup(text);
+    
+            box.add_child(label);
+            this.layout.add_child(box);
         }
         _loadHistory() {
             this.history = HISTORY;
