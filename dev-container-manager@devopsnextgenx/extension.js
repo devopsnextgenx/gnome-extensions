@@ -3,6 +3,7 @@ import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { BaseContainer } from './extensions/container.js';
 import { DockerMenu } from './extensions/docker/dockerMonitor.js';
 import { KindMonitor } from './extensions/kind/kindMonitor.js';
+import { Jarvis } from './extensions/jarvis/JarvisMonitor.js';
 import { OllamaMonitor } from './extensions/ollama/ollamaMonitor.js';
 import { checkDependencies, getMissingDependencies } from './extensions/base/systemInterface.js';
 
@@ -21,6 +22,7 @@ class DevContainerManager {
         const missingOllama = !dependencies.hasOllama;
         missingOllama && Main.notifyError(`[dev-container-manager] missing dependencies`, 'Install Ollama and download models to run and monitor local AI models. cmd: "curl -fsSL https://ollama.com/install.sh | sh"');
         this.container.addMonitor(new OllamaMonitor('Ollama', 'Llama'));
+        this.container.addMonitor(new Jarvis('Jarvis', 'Jarvis'));
     }
     addToPanel() {
         Main.panel.addToStatusArea('DevContainerManager', this.container, -1, 'left');

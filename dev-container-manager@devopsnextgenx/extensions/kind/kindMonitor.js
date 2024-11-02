@@ -10,23 +10,10 @@ import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
 import { Monitor } from '../base/monitor.js';
 import * as System from '../base/systemInterface.js';
-import { KindClusterItem } from '../kind/kindMonitorItem.js';
+import { _kindAction, KindClusterItem } from '../kind/kindMonitorItem.js';
 import { buildIcon } from '../base/ui-component-store.js';
 import { KindClusterNode } from './kindCluster.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-
-const _kindAction = (clusterName, clusterCommand) => {
-  System.runKindCommand(clusterCommand, clusterName, (ok, command, err) => {
-      if (ok) {
-          Main.notify("GNOME Extension: dev-container-manager", `Command ${command} successful!!!`);
-      } else {
-          let errMsg = _("Error occurred when running `" + command + "`");
-          Main.notifyError(errMsg);
-          logError(errMsg);
-          logError(err);
-      }
-  });
-}
 
 // Kind icon as panel menu
 export const KindMonitor = GObject.registerClass(

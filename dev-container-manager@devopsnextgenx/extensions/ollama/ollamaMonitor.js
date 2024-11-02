@@ -4,6 +4,7 @@ import GLib from 'gi://GLib';
 import St from 'gi://St';
 import GObject from 'gi://GObject';
 import Clutter from 'gi://Clutter';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import { PopupMenuItem } from 'resource:///org/gnome/shell/ui/popupMenu.js'
 import * as CheckBox from 'resource:///org/gnome/shell/ui/checkBox.js';
@@ -200,12 +201,26 @@ export const OllamaMonitor = GObject.registerClass(
         this._addToggleOptions();
         this._models = llamaModels;
         this._models.forEach((model) => {
+          const isActive = model.name === this.settings.get_string("llm-model");
+          console.log(model.name, this.settings.get_string("llm-model"));
+          const button = new St.Button({ style_class: `button action-button`,  });
+          button.child = buildIcon(isActive ? 'ball': 'ball-empty', `${isActive ? 'active-context ': 'inactive-context'}`, 10);
+          let timeoutId;
+          button.connect('clicked', () => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+              Main.notify("GNOME Extension: dev-container-manager", `Updated llm model for use to ${model.name} successful!!!`);
+              this.settings.set_string("llm-model", `${model.name}`);
+            }, 1000);
+          });
+          this.addMenuRow(button, 0, 1, 1);
+
           const subMenu = new OllamaMonitorItem(
             model.name,
             model.status,
             this.showInactive
           );
-          this.addMenuRow(subMenu, 0, 2, 1);
+          this.addMenuRow(subMenu, 1, 1, 1);
         });
         this.isTogglePending = false;
         if (!this._models.length) {

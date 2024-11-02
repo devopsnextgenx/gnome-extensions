@@ -23,5 +23,35 @@
     <key name="command" type="s">
       <default>"ollama"</default>
     </key>
+    <key name="llm-model" type="s">
+        <default>"llama3.2:latest"</default>
+        <summary>LLM model from Open Router</summary>
+        <description>LLM model for prompting</description>
+    </key>
+    <key name="history" type="s">
+        <default>"[]"</default>
+        <summary>Chat History</summary>
+        <description>Saving chat history as JSON.Stringify</description>
+    </key>
+    <key name="human-message-color" type="s">
+        <default>"rgb(143,240,164)"</default>
+        <summary>Background Color of Human Message</summary>
+        <description>Customizing</description>
+    </key>
+    <key name="human-message-text-color" type="s">
+        <default>"rgb(61,56,70)"</default>
+        <summary>Text Color of Human message</summary>
+        <description>Customizing</description>
+    </key>
+    <key name="llm-message-color" type="s">
+        <default>"rgb(119,118,123)"</default>
+        <summary>Background Color of LLM message</summary>
+        <description>Customizing</description>
+    </key>
+    <key name="llm-message-text-color" type="s">
+        <default>"rgb(0,0,0)"</default>
+        <summary>Text Color of LLM message</summary>
+        <description>Customizing</description>
+    </key>
   </schema>
 </schemalist>

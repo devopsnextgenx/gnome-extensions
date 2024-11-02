@@ -13,3 +13,4 @@ Also consider donating to [GNOME](https://www.gnome.org/support-gnome/donate/)
 <!-- https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator
 https://extensions.gnome.org/review/45679
 https://github.com/bajcmartinez/nordvpn-status -->
+

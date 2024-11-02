@@ -72,7 +72,6 @@ export const Monitor = GObject.registerClass({
         }
         this.emit('menu-set');
     }
-
     buildMenuBase() {
         if (!this.menu) {
             return;

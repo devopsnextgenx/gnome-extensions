@@ -9,7 +9,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as System from '../base/systemInterface.js'
 import { actionIcon, buildLabel } from '../base/ui-component-store.js';
 
-const _llamaAction = (modelName, ollamaAction) => {
+export const _llamaAction = (modelName, ollamaAction) => {
   System.runOllamaCommand(ollamaAction, modelName, (ok, command, err) => {
     if (ok) {
       Main.notify("GNOME Extension: dev-container-manager", `Command ${command} successful!!!`);
