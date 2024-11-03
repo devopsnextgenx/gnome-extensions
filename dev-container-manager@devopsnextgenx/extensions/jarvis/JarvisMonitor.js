@@ -1,4 +1,5 @@
 import St from 'gi://St';
+import Gio from "gi://Gio";
 import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import Clutter from 'gi://Clutter';
@@ -10,6 +11,7 @@ import { buildIcon } from '../base/ui-component-store.js';
 import {convertMD} from "./md2pango.js";
 import Pango from 'gi://Pango';
 import Soup from 'gi://Soup';
+import { getExtensionObject } from '../../extension.js';
 
 let HISTORY = [];
 let OPENROUTER_CHABOT_MODEL = "llama3.2:latest"; 
@@ -104,13 +106,14 @@ export const Jarvis = GObject.registerClass(
             });
             
             entryBox.add_child(this.chatInput);
-            
+            const gicon = Gio.icon_new_for_string(
+                `${getExtensionObject().path}/icons/chat.svg`
+              );
             this.newConversation = new St.Button({ 
-                style: "width: 16px; height:16px; margin-right: 15px; margin-left: 10px'",
-            
+                style: "width: 30px; height:30px; margin-right: 15px; margin-left: 10px'",
                 child: new St.Icon({
-                    icon_name: 'tab-new-symbolic',
-                    style: 'width: 30px; height:30px'}) 
+                    gicon: gicon
+                }) 
             });
 
             this.newConversation.connect('clicked', (actor) => {
@@ -146,7 +149,8 @@ export const Jarvis = GObject.registerClass(
                 style: 'text-wrap: wrap'
             });
             
-            this._addInstructionBox('llmMessage', `Switch to a different llm model by using Ollama extention, by changing blue dot!`, "#ff0000");
+            this._addInstructionBox('llmMessage', 
+                `Switch different llm models by using Ollama extention,\nby changing blue dot!`, "#ff0000");
             
             this._loadHistory();
 
@@ -165,14 +169,14 @@ export const Jarvis = GObject.registerClass(
             let box = new St.BoxLayout({
                 vertical: true,
                 style_class: `${type}-box`,
-                style: `padding: 5px !important;`
+                style: `padding: 5px !important; padding-top: 0px !important;`,
             });
             
             let label = new St.Label({
                 style_class: type,
                 style: `color: ${textColor}; font-size: small;`,
                 y_expand: true,
-                reactive: true
+                reactive: true  
             });
     
             label.clutter_text.single_line_mode = false;
