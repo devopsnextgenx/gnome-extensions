@@ -170,7 +170,7 @@ export const Jarvis = GObject.registerClass(
             
             let label = new St.Label({
                 style_class: type,
-                style: `color: ${textColor}; font-size: smaller;`,
+                style: `color: ${textColor}; font-size: small;`,
                 y_expand: true,
                 reactive: true
             });
