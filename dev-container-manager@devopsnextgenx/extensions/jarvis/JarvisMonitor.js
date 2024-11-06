@@ -163,6 +163,7 @@ export const Jarvis = GObject.registerClass(
 
             this.layout.add_child(this.chatView);
             this.layout.add_child(entryBox);
+
             global.stage.set_key_focus(this.chatInput);
         }
         _addInstructionBox(type, text, textColor) {
@@ -394,6 +395,10 @@ export const Jarvis = GObject.registerClass(
             });
         }
         destroy() {
+            if (this.timeoutResponse) {
+                GLib.Source.remove(this.timeoutResponse);
+                this.timeoutResponse = null;
+            }
             super.destroy();
         }
     });

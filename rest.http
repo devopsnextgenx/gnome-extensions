@@ -1,0 +1,9 @@
+### 
+POST http://localhost:11434/api/generate HTTP/1.1
+Content-Type: application/json
+
+{
+  "model": "llama3.2:latest",
+  "prompt": "How to generate fibinacci numbers in Python?",
+  "stream": false
+}

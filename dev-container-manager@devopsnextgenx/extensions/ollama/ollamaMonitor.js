@@ -69,6 +69,10 @@ export const OllamaMonitor = GObject.registerClass(
     }
 
     destroy() {
+      if (this.timeoutId) {
+        GLib.Source.remove(this.timeoutId);
+        this.timeoutId = null;
+      }
       this.clearLoop();
       super.destroy();
     }
@@ -205,10 +209,10 @@ export const OllamaMonitor = GObject.registerClass(
           console.log(model.name, this.settings.get_string("llm-model"));
           const button = new St.Button({ style_class: `button action-button`,  });
           button.child = buildIcon(isActive ? 'ball': 'ball-empty', `${isActive ? 'active-context ': 'inactive-context'}`, 10);
-          let timeoutId;
+          this.timeoutId;
           button.connect('clicked', () => {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => {
+            clearTimeout(this.timeoutId);
+            this.timeoutId = setTimeout(() => {
               Main.notify("GNOME Extension: dev-container-manager", `Updated llm model for use to ${model.name} successful!!!`);
               this.settings.set_string("llm-model", `${model.name}`);
             }, 1000);
