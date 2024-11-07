@@ -235,8 +235,6 @@ export const Jarvis = GObject.registerClass(
                 
     
                 label.connect('enter-event', (actor) => {
-    
-                    
                     if (this.chatInput.get_text() == "") {
                         this.timeoutCopy = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 0.4, () => { 
                             this.chatInput.set_reactive(false);
@@ -263,12 +261,6 @@ export const Jarvis = GObject.registerClass(
         }
         openRouterChat() {
             let message = Soup.Message.new('POST', 'http://localhost:11434/api/chat');
-            
-            // message.request_headers.append(
-            //         'Authorization',
-            //         `Bearer ${OPENROUTER_API_KEY}`
-            // )
-    
     
             let body = JSON.stringify({
                 "model": OPENROUTER_CHABOT_MODEL,
@@ -398,6 +390,10 @@ export const Jarvis = GObject.registerClass(
             if (this.timeoutResponse) {
                 GLib.Source.remove(this.timeoutResponse);
                 this.timeoutResponse = null;
+            }
+            if (this.timeoutCopy) {
+                GLib.Source.remove(this.timeoutCopy);
+                this.timeoutCopy = null;
             }
             super.destroy();
         }
