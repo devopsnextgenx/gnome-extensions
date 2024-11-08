@@ -222,6 +222,7 @@ export const OllamaMonitor = GObject.registerClass(
           const subMenu = new OllamaMonitorItem(
             model.name,
             model.status,
+            model.size,
             this.showInactive
           );
           this.addMenuRow(subMenu, 1, 1, 1);

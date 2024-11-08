@@ -40,7 +40,7 @@ const getStatus = (statusMessage) => {
 // Menu entry representing a Ollama Model
 export const OllamaMonitorItem = GObject.registerClass(
   class OllamaMonitorItem extends St.Widget {
-    _init(modelName, modelStatus, showInactive) {
+    _init(modelName, modelStatus, modelSize, showInactive) {
       super._init({
         reactive: true,
         can_focus: true,
@@ -83,6 +83,7 @@ export const OllamaMonitorItem = GObject.registerClass(
             break;
         }
         
+        this.addChild(buildLabel(modelSize, 'item-label', "width: 80px; padding-left: 10px; margin-top: 5px;  font-weight: bold; color: #0000FF; text-align: right; font-size: small;"));
         this.addChild(buildLabel(modelName));
       }
     }
