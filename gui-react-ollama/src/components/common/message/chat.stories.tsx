@@ -1,5 +1,5 @@
+import { useState } from 'react';
 import type { Meta, StoryObj } from "@storybook/react";
-
 import { Chat } from "./chat";
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
@@ -47,6 +47,7 @@ export const chat: Story = {
       createdAt: "2023-01-01T00:00:00Z",
       updatedAt: "2023-01-01T00:00:00Z",
       sender: "agent",
-    }]
+    }],
+    onSendMessage: (message: string) => console.log
   }
 };

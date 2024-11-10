@@ -5,17 +5,11 @@ import './chat.css';
 import MessageInput from "./messageInput";
 
 export interface ChatProps {
-    messages: MessageProps[]
+    messages: MessageProps[],
+    onSendMessage: any
 }
-export const Chat = ({ messages, ...props }: ChatProps) => {
-    const onSendMessage = (message: string) => {
-        console.log(`message: ${message}`);
-
-        messages.push({
-            content: [{text: message, type: "text"}],
-            sender: "user"
-        });
-    }
+export const Chat = ({ messages, onSendMessage, ...props }: ChatProps) => {
+    
     return (
         <div className="chat-container">
             <div className="messages-container">

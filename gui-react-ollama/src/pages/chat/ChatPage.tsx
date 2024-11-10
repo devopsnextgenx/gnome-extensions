@@ -1,9 +1,10 @@
+import { useState } from 'react';
 import { Chat } from '../../components/common/message/chat';
 import { MessageProps } from '../../models/message';
 import './ChatPage.css';
 
 export const ChatPage = () => {
-    const chatHistory: MessageProps[] = [{
+    const messages: MessageProps[] = [{
         id: 2,
         content: [
             {
@@ -26,7 +27,16 @@ export const ChatPage = () => {
         updatedAt: "2023-01-01T00:00:00Z",
         sender: "agent",
     }];
+    const onSendMessage = (message: string) => {
+        console.log(`message: ${message}`)
+        const newMsg = {
+            content: [{text: message, type: "text"}],
+            sender: "user"
+        };
+        setChatHistory((oldChatHistory) => [...oldChatHistory, newMsg as MessageProps]);    }
+    const [chatHistory, setChatHistory] = useState(messages);
+
     return (
-        <Chat messages={chatHistory}/>
+        <Chat messages={chatHistory} onSendMessage={onSendMessage}/>
     );
 };
