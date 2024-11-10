@@ -5,11 +5,14 @@ import { CodeBlock } from './code';
 export const Message = ({
     sender = "system",
     content = [{ text: "Hello There!!!", type: "text" }],
+    createdAt,
+    updatedAt,
+    id,
     ...props
 }: MessageProps) => {
     const text = content[0].text;
     const isUser = sender === "user";
-    
+
     const messageStyle = {
         backgroundColor: isUser ? '#0084ff' : '#f1f0f0',
         color: isUser ? 'white' : 'black',
@@ -19,11 +22,19 @@ export const Message = ({
         alignSelf: isUser ? 'flex-end' : 'flex-start',
         marginBottom: '10px',
     };
-
     return (
-        <div style={{ display: 'flex', justifyContent: isUser ? 'flex-end' : 'flex-start' }}>
-            <div style={messageStyle}>
-                <ReactMarkdown
+        <div className={`message ${sender}`}>
+            <div className="message-header">
+                <div className="avatar">
+                    <span className="avatar-initial">
+                        {sender === 'user' ? 'U' : 'A'}
+                    </span>
+                </div>
+                <span className="sender-name">
+                    {sender === 'user' ? 'User' : 'Agent'}
+                </span>
+            </div>
+            <ReactMarkdown
                     children={text}
                     components={{
                         code({ node, className, children, ...props }) {
@@ -38,6 +49,8 @@ export const Message = ({
                         },
                     }}
                 />
+            <div className="timestamp">
+                {updatedAt}
             </div>
         </div>
     )

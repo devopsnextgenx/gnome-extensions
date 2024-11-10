@@ -17,7 +17,7 @@ const meta = {
   argTypes: {
   },
   // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
-  args: {  createdAt: "", updatedAt: "" },
+  args: { },
 } satisfies Meta<typeof CodeBlock>;
 
 export default meta;

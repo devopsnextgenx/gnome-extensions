@@ -3,10 +3,7 @@ import ReactDOM from 'react-dom/client';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import App from './pages/app/App';
-import Home from './pages/home/Home';
-import Counter from './pages/counter/Counter';
+import { RouterProvider } from 'react-router-dom';
 import { navbarxRouter } from './components/common/navbarx/Navbarx';
 
 const root = ReactDOM.createRoot(
