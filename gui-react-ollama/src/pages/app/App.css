@@ -1,0 +1,27 @@
+.app {
+    height: 100vh;
+}
+
+nav {
+    padding: 10px;
+    margin-bottom: 10px;
+    background: gray;
+}
+
+ul {
+    list-style-type: none;
+}
+
+li {
+    display: inline;
+    margin-right: 20px;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+}
+
+a:hover {
+    color: #eee;
+}
