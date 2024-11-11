@@ -17,6 +17,12 @@ cp gnome-debug.desktop ~/.local/share/applications
 
 [![dev-container-manager](./dev-container-manager@devopsnextgenx/ollama.png)](https://youtu.be/mMjJ08jSmGo)
 
+- To run Ollama and chat with it, install ollama on machine.
+- Run docker container with below command
+    ```
+        docker run -d --name gui-react-ollama -p 4000:80 amitkshirsagar13/gui-react-ollama
+    ```
+
 ## Like this Extension?
 
 You can support my work on [ko-fi](https://ko-fi.com/devopsnextgenx).
