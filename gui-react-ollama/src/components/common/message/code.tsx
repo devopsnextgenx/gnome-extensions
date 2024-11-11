@@ -26,8 +26,7 @@ export const CodeBlock = ({ language, code, style = atomDark }: CodeBlockProps) 
         <div key={uuidv4()} className="parentDiv">
             <CopyToClipboard
                 text={code}
-                onCopy={() => setIsCopied(true)}
-                >
+                onCopy={() => setIsCopied(true)}>
                 <button type="button" className="copy-button" aria-label="Copy to Clipboard Button">
                     {isCopied ? <FaRegClipboard /> : <FaRegCopy />}
                 </button>
