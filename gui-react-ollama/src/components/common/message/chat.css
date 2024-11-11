@@ -121,3 +121,10 @@
   .agent .timestamp {
     color: #202020; /* gray-400 */
   }
+
+  p > code {
+    background: #444444;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #333333;
+}

@@ -9,7 +9,7 @@ export const ChatPage = () => {
         content: [
             {
                 type: "text",
-                text: "Hello"
+                text: "Hello, `world`"
             }
         ],
         createdAt: "2023-01-01T00:00:00Z",
