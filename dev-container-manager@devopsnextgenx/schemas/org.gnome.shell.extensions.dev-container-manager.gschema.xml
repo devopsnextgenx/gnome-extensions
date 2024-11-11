@@ -17,10 +17,13 @@
       <summary>Show the Kind Clusters</summary>
       <description>Lists Kind Clusters and Nodes.</description>
     </key>
-    <key name="url" type="s">
-      <default>"localhost:11434"</default>
+    <key name="llm-url" type="s">
+      <default>"http://localhost:11434"</default>
     </key>
-    <key name="command" type="s">
+    <key name="llm-chat-url" type="s">
+      <default>"http://localhost:3000"</default>
+    </key>
+    <key name="llm-command" type="s">
       <default>"ollama"</default>
     </key>
     <key name="llm-model" type="s">

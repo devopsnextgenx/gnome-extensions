@@ -14,7 +14,9 @@ import Soup from 'gi://Soup';
 import { getExtensionObject } from '../../extension.js';
 
 let HISTORY = [];
-let OPENROUTER_CHABOT_MODEL = "llama3.2:latest"; 
+let LLM_CHABOT_MODEL = "llama3.2:latest"; 
+let LLM_CHABOT_URL = "http://localhost:11434"; 
+let LLM_CHABOT_GUI = "http://localhost:3000"; 
 let BACKGROUND_COLOR_HUMAN_MESSAGE = '';
 let BACKGROUND_COLOR_LLM_MESSAGE = '';
 let COLOR_HUMAN_MESSAGE = '';
@@ -38,6 +40,7 @@ export const Jarvis = GObject.registerClass(
             this._httpSession = new Soup.Session();
             this.timeoutCopy = null;
             this.timeoutResponse = null;
+            this.path = getExtensionObject().path;
         }
         _loadSettings () {
             this._settingsChangedId = this.settings.connect('changed', () => {
@@ -46,7 +49,9 @@ export const Jarvis = GObject.registerClass(
             this._fetchSettings();
         }
         _fetchSettings () {
-            OPENROUTER_CHABOT_MODEL          = this.settings.get_string("llm-model");
+            LLM_CHABOT_URL          = this.settings.get_string("llm-url");
+            LLM_CHABOT_GUI          = this.settings.get_string("llm-chat-url");
+            LLM_CHABOT_MODEL          = this.settings.get_string("llm-model");
             BACKGROUND_COLOR_HUMAN_MESSAGE      = this.settings.get_string("human-message-color");
             BACKGROUND_COLOR_LLM_MESSAGE       = this.settings.get_string("llm-message-color");
             COLOR_HUMAN_MESSAGE      = this.settings.get_string("human-message-text-color");
@@ -67,6 +72,53 @@ export const Jarvis = GObject.registerClass(
             this.menuPanel.actor.add_child(this.layout);
             this.menu.addMenuItem(this.menuPanel);
 
+        }
+        killWindow() {
+            console.log('Killing window');
+            if (this.proc) {
+                try {
+                    this.proc.force_exit();
+                } catch (e) {
+                    console.log('Failed to kill subprocess: ' + e.message);
+                }
+                console.log('Kiled window');
+            }
+        }
+        toggleWindow() {
+            console.log('Toggling window');
+            if (!this.proc) {
+                console.log(`Creating new subprocess ${this.path}`);
+
+                // Get the position of the button
+                let [x, y] = this.icon.get_transformed_position();
+                let [width, height] = this.icon.get_size();
+
+                console.log(x+','+y+','+width+','+height);
+                this.proc = new Gio.Subprocess({
+                    argv: ['gjs', this.path + '/extensions/jarvis/window.js', x.toString(), (y + height).toString(), LLM_CHABOT_GUI]
+                });
+    
+                this.proc.init(null);
+    
+                this.proc.wait_async(null, (proc, res) => {
+                    try {
+                        this.proc.wait_finish(res);
+                        console.log('Subprocess exited');
+                    } catch (e) {
+                        console.log('Subprocess wait failed: ' + e.message);
+                    }
+                    this.proc = null;
+    
+                    if(this.automaticallyStartNewWindowAfterRestart){
+                        this.automaticallyStartNewWindowAfterRestart = false;
+                        this.toggleWindow();
+                    }
+                });
+    
+                return;
+            }
+    
+            this.killWindow();
         }
         _buildMenu() {
             this.chatInput = new St.Entry({
@@ -94,7 +146,7 @@ export const Jarvis = GObject.registerClass(
                     "content": input
                 });
 
-                this.openRouterChat();
+                this.llmChat();
 
                 this.chatInput.set_reactive(false)
                 this.chatInput.set_text("I am Thinking...")
@@ -148,6 +200,43 @@ export const Jarvis = GObject.registerClass(
                 style_class: 'popup-menu-box',
                 style: 'text-wrap: wrap'
             });
+
+            let launchBox = new St.BoxLayout({
+                vertical: false,
+                style_class: 'popup-menu-box'
+            });
+            
+            const launchChat = Gio.icon_new_for_string(
+                `${getExtensionObject().path}/icons/chat-gui.svg`
+              );
+            const launchChatWindow = new St.Button({ 
+                style: "width: 30px; height:30px; margin-right: 15px; margin-left: 10px'",
+                child: new St.Icon({
+                    gicon: launchChat
+                }) 
+            });
+
+            let launchChatLabel = new St.Label({
+                style_class: "llmMessage",
+                style: `color: #ADFF2F; font-size: small;`,
+                y_expand: true,
+                reactive: true  
+            });
+    
+            launchChatLabel.clutter_text.single_line_mode = false;
+            launchChatLabel.clutter_text.line_wrap        = true;
+            launchChatLabel.clutter_text.line_wrap_mode   = Pango.WrapMode.WORD_CHAR;
+            launchChatLabel.clutter_text.ellipsize        = Pango.EllipsizeMode.NONE;
+            launchChatLabel.clutter_text.set_markup("Launch Chat Window");
+
+            launchChatWindow.connect('clicked', (actor) => {
+                console.log("Launching chat window");
+                this.toggleWindow();
+            });
+
+            launchBox.add_child(launchChatLabel);
+            launchBox.add_child(launchChatWindow);
+            this.layout.add_child(launchBox);
             
             this._addInstructionBox('llmMessage', 
                 `Switch different llm models by using Ollama extention,\nby changing blue dot!`, "#ff0000");
@@ -259,11 +348,11 @@ export const Jarvis = GObject.registerClass(
             label.clutter_text.set_markup(text);
             this.chatBox.add_child(box);
         }
-        openRouterChat() {
-            let message = Soup.Message.new('POST', 'http://localhost:11434/api/chat');
+        llmChat() {
+            let message = Soup.Message.new('POST', `${LLM_CHABOT_URL}/api/chat`);
     
             let body = JSON.stringify({
-                "model": OPENROUTER_CHABOT_MODEL,
+                "model": LLM_CHABOT_MODEL,
                 "messages": this.history,
                 "stream": false
             });

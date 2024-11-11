@@ -9,3 +9,27 @@
 .form-check-label {
     font-size: medium;
 }
+
+#chat-api-input {
+    padding: '8px';
+    width: '100%';
+    border: '1px solid #000000';
+    color: '#000000';
+    border-radius: '4px';
+}
+
+.input-disabled {
+    background-color: #8b8b8b;
+}
+.input-enabled {
+    background-color: silver;
+    color: #0000FF;
+}
+
+.form-switch .form-check-input {
+    font-size: medium;
+}
+
+.form-check-label {
+    font-size: medium;
+}
