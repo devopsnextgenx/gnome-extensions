@@ -17,14 +17,20 @@
       <summary>Show the Kind Clusters</summary>
       <description>Lists Kind Clusters and Nodes.</description>
     </key>
+    <key name="llm-command" type="s">
+      <default>"ollama"</default>
+    </key>
     <key name="llm-url" type="s">
       <default>"http://localhost:11434"</default>
     </key>
     <key name="llm-chat-url" type="s">
       <default>"http://localhost:3000"</default>
     </key>
-    <key name="llm-command" type="s">
-      <default>"ollama"</default>
+    <key name="gui-width" type="s">
+      <default>"500"</default>
+    </key>
+    <key name="gui-height" type="s">
+      <default>"800"</default>
     </key>
     <key name="llm-model" type="s">
         <default>"llama3.2:latest"</default>

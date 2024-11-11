@@ -21,6 +21,8 @@ let BACKGROUND_COLOR_HUMAN_MESSAGE = '';
 let BACKGROUND_COLOR_LLM_MESSAGE = '';
 let COLOR_HUMAN_MESSAGE = '';
 let COLOR_LLM_MESSAGE = '';
+let GUI_WIDTH = 500;
+let GUI_HEIGHT = 800;
 
 export const Jarvis = GObject.registerClass(
     class Jarvis extends Monitor {
@@ -51,10 +53,12 @@ export const Jarvis = GObject.registerClass(
         _fetchSettings () {
             LLM_CHABOT_URL          = this.settings.get_string("llm-url");
             LLM_CHABOT_GUI          = this.settings.get_string("llm-chat-url");
-            LLM_CHABOT_MODEL          = this.settings.get_string("llm-model");
+            LLM_CHABOT_MODEL        = this.settings.get_string("llm-model");
+            GUI_WIDTH               = this.settings.get_string("gui-width");
+            GUI_HEIGHT              = this.settings.get_string("gui-height");
             BACKGROUND_COLOR_HUMAN_MESSAGE      = this.settings.get_string("human-message-color");
             BACKGROUND_COLOR_LLM_MESSAGE       = this.settings.get_string("llm-message-color");
-            COLOR_HUMAN_MESSAGE      = this.settings.get_string("human-message-text-color");
+            COLOR_HUMAN_MESSAGE     = this.settings.get_string("human-message-text-color");
             COLOR_LLM_MESSAGE       = this.settings.get_string("llm-message-text-color");
             HISTORY           = JSON.parse(this.settings.get_string("history"));
         }
@@ -95,7 +99,7 @@ export const Jarvis = GObject.registerClass(
 
                 console.log(x+','+y+','+width+','+height);
                 this.proc = new Gio.Subprocess({
-                    argv: ['gjs', this.path + '/extensions/jarvis/window.js', x.toString(), (y + height).toString(), LLM_CHABOT_GUI]
+                    argv: ['gjs', this.path + '/extensions/jarvis/window.js', x.toString(), (y + height).toString(), GUI_WIDTH, GUI_HEIGHT, LLM_CHABOT_GUI]
                 });
     
                 this.proc.init(null);

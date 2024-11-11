@@ -19,12 +19,12 @@ function prepareCookieStorage() {
     return GLib.build_filenamev([appDataDir, cookieFilename]);
 }
 
-function createWindow(x, y, chatLink) {
+function createWindow(x, y, width, height, chatLink) {
     log('Creating window');
     const appWindow = new Gtk.Window({
         type: Gtk.WindowType.TOPLEVEL,
-        default_width: 500,
-        default_height: 700,
+        default_width: width,
+        default_height: height,
         title: 'Ollama Chat GUI'
     });
 
@@ -54,7 +54,7 @@ function createWindow(x, y, chatLink) {
 
 Gtk.init(null);
 
-const [x, y, chatLink] = ARGV;
-createWindow(parseInt(x), parseInt(y), chatLink);
+const [x, y, width, height, chatLink] = ARGV;
+createWindow(parseInt(x), parseInt(y), parseInt(width), parseInt(height), chatLink);
 Gtk.main();
 log('Script execution completed');

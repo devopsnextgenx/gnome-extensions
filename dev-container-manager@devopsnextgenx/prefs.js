@@ -74,7 +74,11 @@ export default class DockerContainersPreferences extends ExtensionPreferences {
             title: 'Ollama Connection',
             description: 'Configure the connections to Ollama',
         });
-        const ollamaConfiguration = [{
+        const ollamaConfiguration = [ {
+            title: 'ollama command',
+            key: 'llm-command',
+            type: 'text'
+        }, {
             title: 'ollama model url',
             key: 'llm-url',
             type: 'text'
@@ -83,10 +87,15 @@ export default class DockerContainersPreferences extends ExtensionPreferences {
             key: 'llm-chat-url',
             type: 'text'
         }, {
-            title: 'ollama command',
-            key: 'llm-command',
+            title: 'GUI Width',
+            key: 'gui-width',
+            type: 'text'
+        },  {
+            title: 'GUI Height',
+            key: 'gui-height',
             type: 'text'
         }];
+
         this.addGroupKeys(groupOllama, ollamaConfiguration, "Ollama Settings");
         page.add(groupOllama);
     }
