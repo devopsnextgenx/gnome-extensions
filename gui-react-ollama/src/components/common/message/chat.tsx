@@ -16,7 +16,7 @@ export const Chat = ({ messages, onSendMessage, messageInput, ...props }: ChatPr
     
     return (
         <div className="chat-container">
-            <div className="messages-container">
+            <div className="messages-container" id="message-container-id">
                 {
                     messages.map((message) => {
                         return (<>
