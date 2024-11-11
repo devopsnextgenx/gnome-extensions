@@ -145,8 +145,8 @@ export const getContainers = async () => {
  * @return {Array} The array of models
  */
 export const getModels = async () => {
-  const host = getExtensionObject().getSettings("org.gnome.shell.extensions.dev-container-manager").get_string('url');
-  const ollamaApi = `http://${ host }/api`
+  const host = getExtensionObject().getSettings("org.gnome.shell.extensions.dev-container-manager").get_string('llm-url');
+  const ollamaApi = `${ host }/api`
   let httpSession = new Soup.Session();
   let modelList = Soup.Message.new('GET', `${ollamaApi}/tags`);
   let psList = Soup.Message.new('GET', `${ollamaApi}/ps`);
@@ -311,7 +311,7 @@ export const runOllamaCommand = async (command, model, callback) => {
   let settings = getExtensionObject().getSettings(
       "org.gnome.shell.extensions.dev-container-manager"
   );
-  let ollamaCmd = settings.get_string('command');
+  let ollamaCmd = settings.get_string('llm-command');
   let spawn = false;
   switch (command) {
     case "show":
