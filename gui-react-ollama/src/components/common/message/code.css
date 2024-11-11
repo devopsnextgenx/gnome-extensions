@@ -1,0 +1,27 @@
+
+.parentDiv {
+    position: relative
+}
+
+.copy-button {
+    position: absolute;
+    right: 5px;
+    top: 0px;
+    padding: 6px;
+    margin: 0;
+    font-size: 18px;
+    transition: color var(--colorTransitionDuration);
+    background: transparent;
+    border: none transparent;
+    color: blue;
+    scale: 1;
+}
+
+.copy-button:focus {
+    outline: 0;
+    color: red;
+}
+
+.copy-button:hover {
+    color: greenyellow;
+}
