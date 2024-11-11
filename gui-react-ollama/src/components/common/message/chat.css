@@ -6,7 +6,7 @@
     height: 700px;
     display: flex;
     flex-direction: column;
-    background-color: #cfffe9; /* gray-50 */
+    background-color: gray; /* gray-50 */
     border-radius: 0.5rem;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   }

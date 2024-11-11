@@ -6,9 +6,13 @@ import MessageInput from "./messageInput";
 
 export interface ChatProps {
     messages: MessageProps[],
-    onSendMessage: any
+    onSendMessage: any,
+    messageInput: {
+        enabled: boolean,
+        placeholder: string
+    }
 }
-export const Chat = ({ messages, onSendMessage, ...props }: ChatProps) => {
+export const Chat = ({ messages, onSendMessage, messageInput, ...props }: ChatProps) => {
     
     return (
         <div className="chat-container">
@@ -27,7 +31,7 @@ export const Chat = ({ messages, onSendMessage, ...props }: ChatProps) => {
                 }
             </div>
             <div>
-            <MessageInput onSendMessage={onSendMessage}/>
+            <MessageInput onSendMessage={onSendMessage} messageInput={messageInput} />
             </div>
         </div>
     );

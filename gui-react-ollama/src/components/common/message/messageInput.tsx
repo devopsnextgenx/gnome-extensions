@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './message-input.css'; // The CSS file above
 
-const MessageInput = ({ onSendMessage }: { onSendMessage: (message: string) => void }) => {
+const MessageInput = ({ onSendMessage, messageInput }: { onSendMessage: (message: string) => void, messageInput: { enabled: boolean, placeholder: string } }) => {
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -47,9 +47,10 @@ const MessageInput = ({ onSendMessage }: { onSendMessage: (message: string) => v
           value={message}
           onChange={handleMessageChange}
           onKeyDown={handleKeyDown}
-          placeholder="Type your message... (Ctrl+Enter to send)"
+          placeholder={messageInput.placeholder}
           className="message-textarea"
           rows={1}
+          disabled={!messageInput.enabled} 
         />
         <button
           onClick={handleSendMessage}

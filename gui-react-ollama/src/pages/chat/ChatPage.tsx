@@ -3,20 +3,6 @@ import { Chat } from '../../components/common/message/chat';
 import { MessageProps } from '../../models/message';
 import './ChatPage.css';
 
-export const ChatPage = () => {
-    const messages: MessageProps[] = [{
-        id: 1,
-        content: [
-            {
-                type: "text",
-                text: "Hello, `world`"
-            }
-        ],
-        createdAt: "2023-01-01T00:00:00Z",
-        updatedAt: "2023-01-01T00:00:00Z",
-        sender: "agent"
-    }];
-
     // [{
     //     id: 2,
     //     content: [
@@ -40,9 +26,29 @@ export const ChatPage = () => {
     //     updatedAt: "2023-01-01T00:00:00Z",
     //     sender: "agent",
     // }];
+export const ChatPage = () => {
+    const messages: MessageProps[] = [{
+        id: 1,
+        content: [
+            {
+                type: "text",
+                text: "Hello, `world`"
+            }
+        ],
+        createdAt: "2023-01-01T00:00:00Z",
+        updatedAt: "2023-01-01T00:00:00Z",
+        sender: "agent"
+    }];
+    
+    const messageInputDefault = {
+        enabled: true,
+        placeholder: "Type your message... (Ctrl+Enter to send)"
+    }
+    const [messageInput, setMessageInput] = useState(messageInputDefault);
 
     const fetchData = async (chatHistory: MessageProps[]) => {
         try {
+            setMessageInput({enabled: false, placeholder: "Asking llm model and waiting for response..."});
             const response = await fetch('http://localhost:11434/api/chat', {
                 method: 'POST',
                 headers: {
@@ -77,11 +83,14 @@ export const ChatPage = () => {
                 sender: response.message.role === 'assistant' ? 'agent' : 'user', 
                 content: [{ type: 'text', text: response.message.content }]
             } as MessageProps]);
+            setMessageInput(messageInputDefault);
         });
     }
     const [chatHistory, setChatHistory] = useState(messages);
 
+
+
     return (
-        <Chat messages={chatHistory} onSendMessage={onSendMessage} />
+        <Chat messages={chatHistory} onSendMessage={onSendMessage} messageInput={messageInput} />
     );
 };

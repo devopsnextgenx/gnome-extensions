@@ -25,6 +25,10 @@ type Story = StoryObj<typeof meta>;
 
 export const chat: Story = {
   args: {
+    messageInput: {
+      enabled: true,
+      placeholder: "Type your message... (Ctrl+Enter to send)"
+    },
     messages: [{
       id: 2,
       content: [
