@@ -78,6 +78,14 @@
   border-bottom-left-radius: 0;
 }
 
+.message.system {
+  background-color: #FF0000;
+  color: #020202;
+  /* gray-800 */
+  border: 1px solid #505050;
+  /* gray-200 */
+  border-bottom-left-radius: 0;
+}
 /* Avatar and name container */
 .message-header {
   display: flex;

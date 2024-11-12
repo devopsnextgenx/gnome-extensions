@@ -35,10 +35,12 @@ export const ChatPage = () => {
                 })
             });
             const data = await response.json();
-            return data;
-        } catch (error) {
+            return { data, status: response.status };
+        } catch (error: any) {
             // Handle errors
             console.error(error);
+            const message = {message: error.message, resolution: 'Check if ollama api is running and model is pulled'}
+            return { data: message, status: 500 };
         }
     };
     const onSendMessage = (message: string) => {
@@ -51,10 +53,22 @@ export const ChatPage = () => {
 
         fetchData(newMsg as MessageProps).then((response: any) => {
             console.log(response.message);
-            setChatHistory((oldChatHistory) => [...oldChatHistory, {
-                sender: response.message.role === 'assistant' ? 'agent' : 'user',
-                content: [{ type: 'text', text: response.message.content }]
-            } as MessageProps]);
+            if (response.status === 200) {
+                setChatHistory((oldChatHistory) => [...oldChatHistory, {
+                    sender: response.data.message.role === 'assistant' ? 'agent' : 'user',
+                    content: [{ type: 'text', text: response.data.message.content }]
+                } as MessageProps]);
+            } else {
+                const errorMessage = JSON.stringify(response.data, null, '\t').replace(/\\"/g, "'").replace(/\\n/g, '\n');
+                const messageString = `### Error Response:\n\nstatus: \`${response.status}\`\n\nmessage: \`\`\`${errorMessage}\`\`\`\n`;
+                console.log(messageString);
+                setChatHistory((oldChatHistory) => [...oldChatHistory, {
+                    sender: 'system',
+                    content: [{
+                        type: 'text', text: messageString
+                    }]
+                } as MessageProps]);
+            }
             setMessageInput(messageInputDefault);
         });
     }
@@ -88,77 +102,77 @@ export const ChatPage = () => {
                     display: 'flex',
                     justifyContent: 'space-between'
                 }}>
-            <div className="input-group-prepend" style={{
-                backgroundColor: 'gray'
-            }}>
-                <span className="input-group-text"
+                <div className="input-group-prepend" style={{
+                    backgroundColor: 'gray'
+                }}>
+                    <span className="input-group-text"
+                        style={{
+                            backgroundColor: 'BLACK',
+                            border: '2px solid #000000',
+                            color: '#0000FF',
+                            fontWeight: 'bold',
+                            alignContent: 'center',
+                        }}
+                        id="llmApiEndpoint">API EndPoint</span>
+                </div>
+                <input
+                    type="text"
+                    value={endpoint}
+                    onChange={handleEndpointChange}
+                    onDoubleClick={handleDoubleClick}
+                    onClick={handleDoubleClick}
+                    readOnly={isDisabled}
+                    onBlur={handleBlur}
+                    placeholder='http://localhost:11434'
                     style={{
-                        backgroundColor: 'BLACK',
+                        height: '100%',
+                        flexGrow: 1,
+                        width: '30%',
+                        padding: '8px',
                         border: '2px solid #000000',
-                        color: '#0000FF',
-                        fontWeight: 'bold',
-                        alignContent: 'center',
+                        color: '#000000',
+                        borderRadius: '4px',
+                        marginLeft: '10px'
                     }}
-                    id="llmApiEndpoint">API EndPoint</span>
-            </div>
-            <input
-                type="text"
-                value={endpoint}
-                onChange={handleEndpointChange}
-                onDoubleClick={handleDoubleClick}
-                onClick={handleDoubleClick}
-                readOnly={isDisabled}
-                onBlur={handleBlur}
-                placeholder='http://localhost:11434'
-                style={{
-                    height: '100%',
-                    flexGrow: 1,
-                    width: '30%',
-                    padding: '8px',
-                    border: '2px solid #000000',
-                    color: '#000000',
-                    borderRadius: '4px',
-                    marginLeft: '10px'
-                }}
-                className={isDisabled ? 'input-disabled' : 'input-enabled'}
-                aria-label="Default"
-                aria-describedby="llmApiEndpoint"
-            />
-            <input
-                type="text"
-                value={llmModel}
-                onChange={handleModelChange}
-                onDoubleClick={handleDoubleClick}
-                onClick={handleDoubleClick}
-                readOnly={isDisabled}
-                onBlur={handleBlur}
-                placeholder='llama3.2'
-                style={{
-                    height: '100%',
-                    flexGrow: 1,
-                    width: '20%',
-                    padding: '8px',
-                    border: '2px solid #000000',
-                    color: '#000000',
-                    borderRadius: '4px',
-                    marginLeft: '10px'
-                }}
-                className={isDisabled ? 'input-disabled' : 'input-enabled'}
-            />
-            <button className="btn btn-danger"
-                style={{
-                    marginLeft: '10px',
-                    fontWeight: 'bold',
-                    borderRadius: '8px',
-                    width: '20%',
-                }}
-                onClick={() => {
-                    setChatHistory([]);
-                    setMessageInput(messageInputDefault);
-                }}
-                type="button"
-                id="button-reset">Reset</button>
-        </div >
+                    className={isDisabled ? 'input-disabled' : 'input-enabled'}
+                    aria-label="Default"
+                    aria-describedby="llmApiEndpoint"
+                />
+                <input
+                    type="text"
+                    value={llmModel}
+                    onChange={handleModelChange}
+                    onDoubleClick={handleDoubleClick}
+                    onClick={handleDoubleClick}
+                    readOnly={isDisabled}
+                    onBlur={handleBlur}
+                    placeholder='llama3.2'
+                    style={{
+                        height: '100%',
+                        flexGrow: 1,
+                        width: '20%',
+                        padding: '8px',
+                        border: '2px solid #000000',
+                        color: '#000000',
+                        borderRadius: '4px',
+                        marginLeft: '10px'
+                    }}
+                    className={isDisabled ? 'input-disabled' : 'input-enabled'}
+                />
+                <button className="btn btn-danger"
+                    style={{
+                        marginLeft: '10px',
+                        fontWeight: 'bold',
+                        borderRadius: '8px',
+                        width: '20%',
+                    }}
+                    onClick={() => {
+                        setChatHistory([]);
+                        setMessageInput(messageInputDefault);
+                    }}
+                    type="button"
+                    id="button-reset">Reset</button>
+            </div >
             <Chat messages={chatHistory} onSendMessage={onSendMessage} messageInput={messageInput} />
         </>
     );
