@@ -3,6 +3,7 @@ import { MessageProps } from "../../../models/message";
 import { Message } from "./message";
 import './chat.css';
 import MessageInput from "./messageInput";
+import { v4 } from "uuid";
 
 export interface ChatProps {
     messages: MessageProps[],
@@ -21,7 +22,7 @@ export const Chat = ({ messages, onSendMessage, messageInput, ...props }: ChatPr
                     messages.map((message) => {
                         return (<>
                             <div
-                                key={message.id}
+                                key={v4()}
                                 className={`message-wrapper ${message.sender}`}
                             >
                                 <Message {...message} />
