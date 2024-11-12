@@ -74,7 +74,7 @@ export const ChatPage = () => {
     const handleModelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setLlmModel(e.target.value);
     };
-    
+
     const handleBlur = () => {
         setIsDisabled(true);
     };
@@ -84,77 +84,81 @@ export const ChatPage = () => {
 
             <div className="input-group mb-3"
                 style={{
-                    width: '100%'
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'space-between'
                 }}>
-                <div className="input-group-prepend" style={{
-                    backgroundColor: 'gray',
-                    width: '25%'
-                }}>
-                    <span className="input-group-text"
-                        style={{
-                            backgroundColor: 'BLACK',
-                            border: '2px solid #000000',
-                            color: '#0000FF',
-                            fontWeight: 'bold'
-                        }}
-                        id="llmApiEndpoint">LLM API EndPoint</span>
-                </div>
-                <input
-                    type="text"
-                    value={endpoint}
-                    onChange={handleEndpointChange}
-                    onDoubleClick={handleDoubleClick}
-                    onClick={handleDoubleClick}
-                    readOnly={isDisabled}
-                    onBlur={handleBlur}
-                    placeholder='http://localhost:11434'
+            <div className="input-group-prepend" style={{
+                backgroundColor: 'gray'
+            }}>
+                <span className="input-group-text"
                     style={{
-                        height: '100%',
-                        flexGrow: 1,
-                        padding: '8px',
+                        backgroundColor: 'BLACK',
                         border: '2px solid #000000',
-                        color: '#000000',
-                        borderRadius: '4px',
-                        marginLeft: '10px'
+                        color: '#0000FF',
+                        fontWeight: 'bold',
+                        alignContent: 'center',
                     }}
-                    className={isDisabled ? 'input-disabled' : 'input-enabled'}
-                    aria-label="Default"
-                    aria-describedby="llmApiEndpoint"
-                />
-                <input
-                    type="text"
-                    value={llmModel}
-                    onChange={handleModelChange}
-                    onDoubleClick={handleDoubleClick}
-                    onClick={handleDoubleClick}
-                    readOnly={isDisabled}
-                    onBlur={handleBlur}
-                    placeholder='llama3.2'
-                    style={{
-                        height: '100%',
-                        flexGrow: 1,
-                        padding: '8px',
-                        border: '2px solid #000000',
-                        color: '#000000',
-                        borderRadius: '4px',
-                        marginLeft: '10px'
-                    }}
-                    className={isDisabled ? 'input-disabled' : 'input-enabled'}
-                />
-                <button className="btn btn-danger"
+                    id="llmApiEndpoint">API EndPoint</span>
+            </div>
+            <input
+                type="text"
+                value={endpoint}
+                onChange={handleEndpointChange}
+                onDoubleClick={handleDoubleClick}
+                onClick={handleDoubleClick}
+                readOnly={isDisabled}
+                onBlur={handleBlur}
+                placeholder='http://localhost:11434'
+                style={{
+                    height: '100%',
+                    flexGrow: 1,
+                    width: '30%',
+                    padding: '8px',
+                    border: '2px solid #000000',
+                    color: '#000000',
+                    borderRadius: '4px',
+                    marginLeft: '10px'
+                }}
+                className={isDisabled ? 'input-disabled' : 'input-enabled'}
+                aria-label="Default"
+                aria-describedby="llmApiEndpoint"
+            />
+            <input
+                type="text"
+                value={llmModel}
+                onChange={handleModelChange}
+                onDoubleClick={handleDoubleClick}
+                onClick={handleDoubleClick}
+                readOnly={isDisabled}
+                onBlur={handleBlur}
+                placeholder='llama3.2'
+                style={{
+                    height: '100%',
+                    flexGrow: 1,
+                    width: '20%',
+                    padding: '8px',
+                    border: '2px solid #000000',
+                    color: '#000000',
+                    borderRadius: '4px',
+                    marginLeft: '10px'
+                }}
+                className={isDisabled ? 'input-disabled' : 'input-enabled'}
+            />
+            <button className="btn btn-danger"
                 style={{
                     marginLeft: '10px',
                     fontWeight: 'bold',
                     borderRadius: '8px',
-                    width: '25%',
+                    width: '20%',
                 }}
                 onClick={() => {
                     setChatHistory([]);
                     setMessageInput(messageInputDefault);
                 }}
-                type="button" 
+                type="button"
                 id="button-reset">Reset</button>
-            </div>
+        </div >
             <Chat messages={chatHistory} onSendMessage={onSendMessage} messageInput={messageInput} />
         </>
     );
