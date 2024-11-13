@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . ./
 
+COPY .env .
+
 RUN npm run build
 
 # Stage 2: Serve the application

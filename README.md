@@ -19,9 +19,9 @@ cp gnome-debug.desktop ~/.local/share/applications
 
 - To run Ollama and chat with it, install ollama on machine.
 - Run docker container with below command
-    ```
-        docker run -d --name gui-react-ollama -p 4000:80 amitkshirsagar13/gui-react-ollama
-    ```
+```
+    docker run -d --name gui-react-ollama -e LLM_MODEL="codellama:7b" -e LLM_API_ENDPOINT="http://localhost:11434" -p 3000:80 amitkshirsagar13/gui-react-ollama
+```
 
 ## Like this Extension?
 

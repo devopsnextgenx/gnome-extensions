@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Chat } from '../../components/common/message/chat';
 import { MessageProps } from '../../models/message';
 import './ChatPage.css';
+
 export const ChatPage = () => {
     const messages: MessageProps[] = [];
 
@@ -9,9 +10,10 @@ export const ChatPage = () => {
         enabled: true,
         placeholder: "Type your message... (Ctrl+Enter to send)"
     }
+    console.log(`${ process.env.NODE_ENV } -> ${ process.env.REACT_APP_LLM_API_ENDPOINT }/${ process.env.REACT_APP_LLM_MODEL }`);
     const modelSpec = {
-        model: 'llama3.2',
-        endpoint: 'http://localhost:11434'
+        model: process.env.REACT_APP_LLM_MODEL || 'llama3.2',
+        endpoint: process.env.REACT_APP_LLM_API_ENDPOINT ||'http://localhost:11434'
     }
     const [messageInput, setMessageInput] = useState(messageInputDefault);
     const [endpoint, setEndpoint] = useState(modelSpec.endpoint);
