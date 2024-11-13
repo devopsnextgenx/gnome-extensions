@@ -231,7 +231,7 @@ export const Jarvis = GObject.registerClass(
             launchChatLabel.clutter_text.line_wrap        = true;
             launchChatLabel.clutter_text.line_wrap_mode   = Pango.WrapMode.WORD_CHAR;
             launchChatLabel.clutter_text.ellipsize        = Pango.EllipsizeMode.NONE;
-            launchChatLabel.clutter_text.set_markup("Launch Chat Window by clicking Circular Icon: \n\nRun 'docker run -d --name gui-react-ollama -p 3000:80 amitkshirsagar13/gui-react-ollama'\n To allow launching chat GUI");
+            launchChatLabel.clutter_text.set_markup("Launch Chat Window by clicking Circular Icon: \n\nRun 'docker run -d --name gui-react-ollama --restart always -p 3000:80 amitkshirsagar13/gui-react-ollama'\n To allow launching chat GUI");
 
             launchChatWindow.connect('clicked', (actor) => {
                 console.log("Launching chat window");
