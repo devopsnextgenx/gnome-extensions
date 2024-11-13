@@ -35,6 +35,7 @@ function createWindow(x, y, width, height, chatLink) {
     log(`Entry Chat link: chatLink=${chatLink}`);
 
     appWindow.move(x, y);
+    appWindow.set_skip_taskbar_hint(true);
 
     const scrolledWindow = new Gtk.ScrolledWindow();
     const cookieStorage = prepareCookieStorage();
