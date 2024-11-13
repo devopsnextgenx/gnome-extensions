@@ -10,7 +10,6 @@ export const ChatPage = () => {
         enabled: true,
         placeholder: "Type your message... (Ctrl+Enter to send)"
     }
-    console.log(`${ process.env.NODE_ENV } -> ${ process.env.REACT_APP_LLM_API_ENDPOINT }/${ process.env.REACT_APP_LLM_MODEL }`);
     const modelSpec = {
         model: process.env.REACT_APP_LLM_MODEL || 'llama3.2',
         endpoint: process.env.REACT_APP_LLM_API_ENDPOINT ||'http://localhost:11434'
@@ -46,7 +45,6 @@ export const ChatPage = () => {
         }
     };
     const onSendMessage = (message: string) => {
-        console.log(`message: ${message}`)
         const newMsg = {
             content: [{ text: message, type: "text" }],
             sender: "user"
@@ -54,7 +52,6 @@ export const ChatPage = () => {
         setChatHistory((oldChatHistory) => [...oldChatHistory, newMsg as MessageProps]);
 
         fetchData(newMsg as MessageProps).then((response: any) => {
-            console.log(response.message);
             if (response.status === 200) {
                 setChatHistory((oldChatHistory) => [...oldChatHistory, {
                     sender: response.data.message.role === 'assistant' ? 'agent' : 'user',
@@ -63,7 +60,6 @@ export const ChatPage = () => {
             } else {
                 const errorMessage = JSON.stringify(response.data, null, '\t').replace(/\\"/g, "'").replace(/\\n/g, '\n');
                 const messageString = `### Error Response:\n\nstatus: \`${response.status}\`\n\nmessage: \`\`\`${errorMessage}\`\`\`\n`;
-                console.log(messageString);
                 setChatHistory((oldChatHistory) => [...oldChatHistory, {
                     sender: 'system',
                     content: [{
@@ -80,7 +76,6 @@ export const ChatPage = () => {
 
     const handleDoubleClick = () => {
         setIsDisabled(false);
-        console.log('Double click detected');
     };
 
     const handleEndpointChange = (e: React.ChangeEvent<HTMLInputElement>) => {
