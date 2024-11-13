@@ -1,3 +1,5 @@
+#!@GJS@ -m
+
 imports.gi.versions.Gtk = '3.0';
 const Gtk = imports.gi.Gtk;
 const GLib = imports.gi.GLib;
@@ -35,19 +37,19 @@ function createWindow(x, y, width, height, chatLink) {
     log(`Entry Chat link: chatLink=${chatLink}`);
 
     appWindow.move(x, y);
-    appWindow.set_skip_taskbar_hint(true);
-
+    
     const scrolledWindow = new Gtk.ScrolledWindow();
     const cookieStorage = prepareCookieStorage();
     const webContext = WebKit2.WebContext.get_default();
     const cookieManager = webContext.get_cookie_manager();
     cookieManager.set_persistent_storage(cookieStorage, WebKit2.CookiePersistentStorage.SQLITE);
-
+    
     const webView = new WebKit2.WebView({ web_context: webContext });
     scrolledWindow.add(webView);
     webView.load_uri(chatLink);
-
+    
     appWindow.add(scrolledWindow);
+    appWindow.set_skip_taskbar_hint(true);
     appWindow.connect('destroy', () => Gtk.main_quit());
     appWindow.show_all();
     log('Window created and shown at calculated position');
