@@ -27,10 +27,10 @@
       <default>"http://localhost:3000"</default>
     </key>
     <key name="gui-width" type="s">
-      <default>"500"</default>
+      <default>"600"</default>
     </key>
     <key name="gui-height" type="s">
-      <default>"800"</default>
+      <default>"900"</default>
     </key>
     <key name="llm-model" type="s">
         <default>"llama3.2:latest"</default>
