@@ -122,22 +122,40 @@ export const isOllamaRunning = async () => {
  * @return {Array} The array of containers as { project, name, status }
  */
 export const getContainers = async () => {
-  const psOut = await execCommand(["docker", "ps", "-a", "--format", "{{.Names}},{{.Status}}"]);
 
-  const images = psOut.split('\n').filter((line) => line.trim().length).map((line) => {
+  const psDockerOut = dependencies["hasDocker"] ? await execCommand(["docker", "ps", "--format", "{{.Names}},{{.Status}}"]) : "";
+  const psPodmanOut = dependencies["hasPodman"] ? await execCommand(["podman", "ps", "--format", "{{.Names}},{{.Status}}"]) : "";
+
+  const dockerImgs = psDockerOut.split('\n').filter((line) => line.trim().length).map((line) => {
     const [name, status] = line.split(',');
     return {
       name,
       status,
+      "provider": "docker"
     }
   });
+  
+  const podmanImgs = psPodmanOut.split('\n').filter((line) => line.trim().length).map((line) => {
+    const [name, status] = line.split(',');
+    return {
+      name,
+      status,
+      "provider": "podman"
+    }
+  });
+  const images = [...dockerImgs, ...podmanImgs];
 
-  return Promise.all(images.map(({ name }) => execCommand(["docker", "inspect", "-f", "{{index .Config.Labels \"com.docker.compose.project\"}}", name])))
-    .then((values) => values.map((commandOutput, i) => ({
-      project: commandOutput.split('\n')[0].trim(),
-      ...images[i]
-    })));
-
+  const containerCmd = dependencies["hasDocker"] ? "docker" : dependencies["hasPodman"] ? "podman" : "xxx";
+  
+  return Promise.all(
+    images.map(({ name }) => 
+      execCommand([containerCmd, "inspect", "-f", "{{index .Config.Labels \"com.docker.compose.project\"}}", name])))
+        .then((values) => values.map((commandOutput, i) => ({
+          project: commandOutput.split('\n')[0].trim(),
+          ...images[i]
+        })
+      )
+  );
 };
 
 /**
@@ -219,15 +237,26 @@ export const getDockerCommandTest = async () => {
  * @return {Number} The number of running containers
  */
 export const getContainerCount = async () => {
-  const psOut = await execCommand(["docker", "ps", "--format", "{{.Names}},{{.Status}}"]);
+  const psDockerOut = dependencies["hasDocker"] ? await execCommand(["docker", "ps", "--format", "{{.Names}},{{.Status}}"]) : "";
+  const psPodmanOut = dependencies["hasPodman"] ? await execCommand(["podman", "ps", "--format", "{{.Names}},{{.Status}}"]) : "";
 
-  const images = psOut.split('\n').filter((line) => line.trim().length).map((line) => {
+  const dockerImgs = psDockerOut.split('\n').filter((line) => line.trim().length).map((line) => {
     const [name, status] = line.split(',');
     return {
       name,
       status,
     }
   });
+  
+  const podmanImgs = psPodmanOut.split('\n').filter((line) => line.trim().length).map((line) => {
+    const [name, status] = line.split(',');
+    return {
+      name,
+      status,
+    }
+  });
+  
+  const images = [...dockerImgs, ...podmanImgs];
   return images.length;
 
 };

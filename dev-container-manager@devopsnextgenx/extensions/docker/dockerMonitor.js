@@ -224,6 +224,7 @@ export const DockerMenu = GObject.registerClass(
           const subMenu = new DockerMonitorItem(
             container.project,
             container.name,
+            container.provider,
             getStatus(container.status),
             this.showInactive
           );
@@ -233,6 +234,7 @@ export const DockerMenu = GObject.registerClass(
           const subMenu = new DockerMonitorItem(
             container.project,
             container.name,
+            container.provider,
             getStatus(container.status),
             this.showInactive
           );

@@ -26,7 +26,7 @@ const _dockerAction = (containerName, dockerCommand) => {
 // Menu entry representing a Docker container
 export const DockerMonitorItem = GObject.registerClass(
   class DockerMonitorItem extends St.Widget {
-    _init(projectName, containerName, status, showInactive) {
+    _init(projectName, containerName, provider, status, showInactive) {
       super._init({
         reactive: true,
         can_focus: true,
@@ -78,6 +78,7 @@ export const DockerMonitorItem = GObject.registerClass(
             break;
         }
         
+        this.addChild(actionIcon(containerName, provider, {"class":`status-${status}`}));
         this.addChild(buildLabel(containerName));
       }
     }
