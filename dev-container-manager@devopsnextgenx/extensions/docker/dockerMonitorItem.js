@@ -46,28 +46,28 @@ export const DockerMonitorItem = GObject.registerClass(
       if (showInactive || ["running", "paused"].includes(status)) {
         let fnBind = (action) => { return _dockerAction.bind(null, containerName, action) };
         this.addChild(actionIcon(containerName, "docker-container-symbolic", {"class":`status-${status}`}));
-        this.addChild(actionIcon(containerName, "docker-container-logs-symbolic", {"class":"status-undefined"}, {fn: fnBind("logs")}));
+        this.addChild(actionIcon(containerName, "docker-container-logs-symbolic", {"class":"status-undefined"}, {fn: fnBind("logs"), name: "View Logs"}));
 
         switch (status) {
           case "running":
-            this.addChild(actionIcon(containerName, "docker-container-exec-symbolic", {"class":"status-exec"}, {fn: fnBind("exec")}));
-            this.addChild(actionIcon(containerName, "docker-container-pause-symbolic", {"class":"status-unpause"}, {fn: fnBind("pause")}));
-            this.addChild(actionIcon(containerName, "docker-container-restart-symbolic", {"class":"status-paused"}, {fn: fnBind("restart")}));
-            this.addChild(actionIcon(containerName, "docker-container-stop-symbolic", {"class":"status-stopped"}, {fn: fnBind("stop")}));
+            this.addChild(actionIcon(containerName, "docker-container-exec-symbolic", {"class":"status-exec"}, {fn: fnBind("exec"), name: "docker exec"}));
+            this.addChild(actionIcon(containerName, "docker-container-pause-symbolic", {"class":"status-unpause"}, {fn: fnBind("pause"), name: "Pause Container"}));
+            this.addChild(actionIcon(containerName, "docker-container-restart-symbolic", {"class":"status-paused"}, {fn: fnBind("restart"), name: "Restart Container"}));
+            this.addChild(actionIcon(containerName, "docker-container-stop-symbolic", {"class":"status-stopped"}, {fn: fnBind("stop"), name: "Stop Container"}));
             break;
 
           case "stopped":
-            this.addChild(actionIcon(containerName, "docker-container-start-symbolic", {"class":"status-running"}, {fn: fnBind("start")}));
+            this.addChild(actionIcon(containerName, "docker-container-start-symbolic", {"class":"status-running"}, {fn: fnBind("start"), name: "Start Container"}));
             this.addChild(actionIcon(containerName));
             this.addChild(actionIcon(containerName));
-            this.addChild(actionIcon(containerName, "trash-delete", {"class":"status-stopped"}, {fn: fnBind("rm")}));
+            this.addChild(actionIcon(containerName, "trash-delete", {"class":"status-stopped"}, {fn: fnBind("rm"), name: "Remove Container"}));
             break;
 
           case "paused":
-            this.addChild(actionIcon(containerName, "docker-container-start-symbolic", {"class":"status-running"}, {fn: fnBind("unpause")}));
+            this.addChild(actionIcon(containerName, "docker-container-start-symbolic", {"class":"status-running"}, {fn: fnBind("unpause"), name: "Unpause Container"}));
             this.addChild(actionIcon(containerName));
             this.addChild(actionIcon(containerName));
-            this.addChild(actionIcon(containerName, "trash-delete", {"class":"status-stopped"}, {fn: fnBind("rm")}));
+            this.addChild(actionIcon(containerName, "trash-delete", {"class":"status-stopped"}, {fn: fnBind("rm"), name: "Remove Container"}));
             break;
 
           default:

@@ -46,7 +46,7 @@ export const KindClusterItem = GObject.registerClass(
 
             let fnBind = _kindAction.bind(null, clusterName, "delete");
             
-            this.addChild(actionIcon(clusterName, "docker-container-stop-symbolic", { "class":"status-stopped" }, {fn: fnBind}));
+            this.addChild(actionIcon(clusterName, "docker-container-stop-symbolic", { "class":"status-stopped" }, {fn: fnBind, name: "Delete Cluster"}));
 
             this.addChild(buildLabel(clusterName));
         }

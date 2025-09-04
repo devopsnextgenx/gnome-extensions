@@ -61,19 +61,19 @@ export const OllamaMonitorItem = GObject.registerClass(
       if (showInactive || status === "running") {
         let fnBind = (action) => { return _llamaAction.bind(null, modelName, action) };
         this.addChild(actionIcon(modelName, status === "running" ? "llama-blue" : "llama", {"class":`status-${status}`}));
-        this.addChild(actionIcon(modelName, "docker-container-logs-symbolic", {"class":"status-undefined"}, {fn: fnBind("show")}));
+        this.addChild(actionIcon(modelName, "docker-container-logs-symbolic", {"class":"status-undefined"}, {fn: fnBind("show"), name: "View Logs"}));
 
         switch (status) {
           case "running":
             this.addChild(actionIcon(modelName));
-            this.addChild(actionIcon(modelName, "llama-stop", {"class":"status-unpause"}, {fn: fnBind("stop")}));
-            this.addChild(actionIcon(modelName, "trash-delete", {"class":"status-stopped"}, {fn: fnBind("rm")}));
+            this.addChild(actionIcon(modelName, "llama-stop", {"class":"status-unpause"}, {fn: fnBind("stop"), name: "Stop Model"}));
+            this.addChild(actionIcon(modelName, "trash-delete", {"class":"status-stopped"}, {fn: fnBind("rm"), name: "Remove Model"}));
             break;
 
           case "stopped":
-            this.addChild(actionIcon(modelName, "llama-run", {"class":"status-unpause"}, {fn: fnBind("run")}));
+            this.addChild(actionIcon(modelName, "llama-run", {"class":"status-unpause"}, {fn: fnBind("run"), name: "Run Model"}));
             this.addChild(actionIcon(modelName));
-            this.addChild(actionIcon(modelName, "trash-delete", {"class":"status-stopped"}, {fn: fnBind("rm")}));
+            this.addChild(actionIcon(modelName, "trash-delete", {"class":"status-stopped"}, {fn: fnBind("rm"), name: "Remove Model"}));
             break;
 
           default:

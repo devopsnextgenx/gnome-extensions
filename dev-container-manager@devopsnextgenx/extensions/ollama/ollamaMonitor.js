@@ -207,7 +207,7 @@ export const OllamaMonitor = GObject.registerClass(
         this._models.forEach((model) => {
           const isActive = model.name === this.settings.get_string("llm-model");
           console.log(model.name, this.settings.get_string("llm-model"));
-          const button = new St.Button({ style_class: `button action-button`,  });
+          const button = new St.Button({ style_class: `button action-button` });
           button.child = buildIcon(isActive ? 'ball': 'ball-empty', `${isActive ? 'active-context ': 'inactive-context'}`, 10);
           this.timeoutId;
           button.connect('clicked', () => {

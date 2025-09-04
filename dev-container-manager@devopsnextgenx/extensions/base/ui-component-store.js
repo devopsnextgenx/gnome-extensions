@@ -13,7 +13,46 @@ export const actionIcon = (containerName, name = "empty", style = { "class":"act
   );
   style.iconSize = style.iconSize || settings.get_int("icon-size");
   
-  let button = new St.Button({ style_class: `${name != 'empty' && action ? 'button' : 'empty-icon'} action-button`, style: `${style.styleText}` });
+  let button = new St.Button({
+    style_class: `${name != 'empty' && action ? 'button' : 'empty-icon'} action-button`,
+    style: `${style.styleText}`,
+    reactive: true,
+    track_hover: true,
+    can_focus: true
+  });
+
+  if (action?.name) {
+    let tooltipLabel = null;
+    
+    button.connect('enter-event', () => {
+      if (!tooltipLabel) {
+        tooltipLabel = new St.Label({
+          text: action.name,
+          style: 'background-color: rgba(0,0,0,0.9); color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px;'
+        });
+        global.stage.add_child(tooltipLabel);
+      }
+      
+      let [x, y] = global.get_pointer();
+      tooltipLabel.set_position(x + 15, y - 30);
+      tooltipLabel.show();
+    });
+
+    button.connect('leave-event', () => {
+      if (tooltipLabel) {
+        tooltipLabel.hide();
+      }
+    });
+
+    // Clean up tooltip when widget is destroyed
+    button.connect('destroy', () => {
+      if (tooltipLabel) {
+        tooltipLabel.destroy();
+        tooltipLabel = null;
+      }
+    });
+  }
+
   style.iconSize = name == "empty" ? 12 : style.iconSize;
   button.child = buildIcon(name, `${style.class}`, style.iconSize);
   actionIconWidget.addChild(button);
