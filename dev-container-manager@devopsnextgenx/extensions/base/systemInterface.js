@@ -299,29 +299,30 @@ export const getModelCount = async () => {
  * @param {String} containerName The container
  * @param {Function} callback A callback that takes the status, command, and stdErr
  */
-export const runDockerCommand = async (command, containerName, callback) => {
+export const runDockerCommand = async (provider, command, containerName, callback) => {
   let dependencies = checkDependencies();
   let cmd = dependencies['hasXTerminalEmulator']
     ? ["x-terminal-emulator", "-e", "sh", "-c"]
     : ["gnome-terminal", "--", "sh", "-c"];
+    
   switch (command) {
     case "exec":
-      cmd = [...cmd, "'docker exec -it " + containerName + " sh; exec $SHELL'"];
+      cmd = [...cmd, "'" + provider + " exec -it " + containerName + " sh; exec $SHELL'"];
       GLib.spawn_command_line_async(cmd.join(" "));
       break;
     case "rm":
-      cmd = ["docker", command, "-f", containerName];
+      cmd = [provider, command, "-f", containerName];
       execCommand(cmd, callback);
       break;
     case "logs":
         cmd = [
           ...cmd,
-          "'docker logs -f --tail 2000 " + containerName + "; exec $SHELL' ",
+          "'" + provider + " logs -f --tail 2000 " + containerName + "; exec $SHELL' ",
         ];
         GLib.spawn_command_line_async(cmd.join(" "));
         break;
     default:
-      cmd = ["docker", command, containerName];
+      cmd = [provider, command, containerName];
       execCommand(cmd, callback);
   }
 };
