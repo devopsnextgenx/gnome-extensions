@@ -123,8 +123,8 @@ export const isOllamaRunning = async () => {
  */
 export const getContainers = async () => {
 
-  const psDockerOut = dependencies["hasDocker"] ? await execCommand(["docker", "ps", "--format", "{{.Names}},{{.Status}}"]) : "";
-  const psPodmanOut = dependencies["hasPodman"] ? await execCommand(["podman", "ps", "--format", "{{.Names}},{{.Status}}"]) : "";
+  const psDockerOut = dependencies["hasDocker"] ? await execCommand(["docker", "ps", "-a", "--format", "{{.Names}},{{.Status}}"]) : "";
+  const psPodmanOut = dependencies["hasPodman"] ? await execCommand(["podman", "ps", "-a", "--format", "{{.Names}},{{.Status}}"]) : "";
 
   const dockerImgs = psDockerOut.split('\n').filter((line) => line.trim().length).map((line) => {
     const [name, status] = line.split(',');

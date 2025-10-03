@@ -1,5 +1,12 @@
 /* Container icon colors */
 
+.panel-button-box {
+    padding: 0px 6px;
+    margin: 0px 0px;
+    border-radius: 0px !important;
+    background-clip: padding-box;
+}
+
 .status-undefined {
 	color: #9e9e9e;
 }

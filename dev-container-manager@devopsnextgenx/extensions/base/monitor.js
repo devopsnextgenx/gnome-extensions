@@ -36,7 +36,10 @@ export const Monitor = GObject.registerClass({
             "org.gnome.shell.extensions.dev-container-manager"
         );
 
-        let hbox = new St.BoxLayout();
+        let hbox = new St.BoxLayout({
+            style_class: 'panel-button-box'
+        });
+        
         this.add_child(hbox);
         this.box = hbox;
 
