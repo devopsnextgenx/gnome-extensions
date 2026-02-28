@@ -257,7 +257,20 @@ export const getContainerCount = async () => {
   });
   
   const images = [...dockerImgs, ...podmanImgs];
-  return images.length;
+
+  const uniqueDockerContainers = Object.values(images.reduce((acc, current) => {
+    const existing = acc[current.name];
+
+    // Logic: 
+    // 1. If we don't have this container yet, add it.
+    // 2. If we have a 'docker' version but the current one is 'podman', overwrite it.
+    if (!existing || (existing.provider === 'docker' && current.provider === 'podman')) {
+      acc[current.name] = current;
+    }
+
+    return acc;
+  }, {}));
+  return uniqueDockerContainers.length;
 
 };
 

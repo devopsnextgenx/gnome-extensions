@@ -219,7 +219,19 @@ export const DockerMenu = GObject.registerClass(
       ) {
         this.clearMenu();
         await this._addToggleOptions();
-        this._containers = dockerContainers;
+        const uniqueDockerContainers = Object.values(dockerContainers.reduce((acc, current) => {
+          const existing = acc[current.name];
+
+          // Logic: 
+          // 1. If we don't have this container yet, add it.
+          // 2. If we have a 'docker' version but the current one is 'podman', overwrite it.
+          if (!existing || (existing.provider === 'docker' && current.provider === 'podman')) {
+            acc[current.name] = current;
+          }
+
+          return acc;
+        }, {}));
+        this._containers = uniqueDockerContainers;
         this._containers.filter((container) => activeStatus.includes(getStatus(container.status))).forEach((container) => {
           const subMenu = new DockerMonitorItem(
             container.project,
