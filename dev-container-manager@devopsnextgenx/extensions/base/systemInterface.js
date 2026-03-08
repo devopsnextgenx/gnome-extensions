@@ -73,7 +73,8 @@ export const createKindCluster = async (clusterName) => {
   const logDir = `${homedir}/.local/share/dev-container-manager`;
   const nohupLog = `${logDir}/${clusterName}.nohup.log`;
 
-  const providerEnv = dependencies["hasPodman"] ? "KIND_EXPERIMENTAL_PROVIDER=podman " : "";
+  const provider = dependencies["hasPodman"] ? "podman" : "docker";
+  const providerEnv = provider === "podman" ? "KIND_EXPERIMENTAL_PROVIDER=podman " : "";
 
   const cmd = [
     "systemd-run",
@@ -82,8 +83,10 @@ export const createKindCluster = async (clusterName) => {
     "-p", "Delegate=yes",
     "sh",
     "-c",
-    `nohup ${providerEnv}kind create cluster --name '${clusterName}' --config '${clusterConfig}' > '${nohupLog}' 2>&1`,
+    `nohup sh -c '${providerEnv}kind create cluster --name "${clusterName}" --config "${clusterConfig}" > "${nohupLog}" 2>&1'`,
   ];
+
+  writeContentToFile(cmd.join(" "), `${clusterName}.cmd.log`);
 
   const readLogFile = (path) => {
     try {
