@@ -68,9 +68,83 @@ export const writeContentToFile = async (content, fileName, filePath = ".local/s
 }
 
 export const createKindCluster = async (clusterName) => {
-  const clusterConfig = `${GLib.get_home_dir()}/.local/share/dev-container-manager/${clusterName}.yaml`;
-  let pOut = await execCommand(["kind","create","cluster","--name",clusterName,"--config",clusterConfig]);
-  
+  const homedir = GLib.get_home_dir();
+
+  const clusterConfig = `${homedir}/.local/share/dev-container-manager/${clusterName}.yaml`;
+  const logDir = `${homedir}/.local/share/dev-container-manager`;
+  const nohupLog = `${logDir}/${clusterName}.nohup.log`;
+  const cmd = [
+    "systemd-run",
+    "--user",
+    "--scope",
+    "-p", "Delegate=yes",
+    "sh",
+    "-c",
+    `nohup kind create cluster --name '${clusterName}' --config '${clusterConfig}' > '${nohupLog}' 2>&1`,
+  ];
+
+  const readLogFile = (path) => {
+    try {
+      const [ok, contents] = GLib.file_get_contents(path);
+      if (ok && contents) {
+        return contents.toString();
+      }
+    } catch (e) {
+      // ignore
+      console.error(`Failed to read log file at ${path}:`, e);
+    }
+    return null;
+  };
+
+  let pOut = "";
+  let log = "";
+  try {
+    pOut = await execCommand(cmd, (ok, command, stdout, stderr) => {
+      const timestamp = new Date().toISOString();
+      const pathEnv = GLib.getenv('PATH');
+      const homeEnv = GLib.getenv('HOME');
+      const currentDir = GLib.get_current_dir();
+      const nohupContents = readLogFile(nohupLog);
+
+      log = [
+        `=== ${timestamp} | ${ok ? "SUCCESS" : "FAILURE"} ===`,
+        `COMMAND: ${command}`,
+        `ENV: PATH=${pathEnv}`,
+        `ENV: HOME=${homeEnv}`,
+        `CWD: ${currentDir}`,
+        `PROVIDER: ${provider || "(none)"}`,
+        `NOHUP_LOG: ${nohupLog}`,
+        `[STDOUT]\n${stdout?.trim() || "(empty)"}`,
+        `[STDERR]\n${stderr?.trim() || "(empty)"}`,
+        `[NOHUP_LOG_CONTENTS]\n${nohupContents?.trim() || "(empty)"}`,
+      ].join("\n\n");
+
+      writeContentToFile(log, `${clusterName}.log`);
+    });
+  } catch (error) {
+    const timestamp = new Date().toISOString();
+    const pathEnv = GLib.getenv('PATH');
+    const homeEnv = GLib.getenv('HOME');
+    const currentDir = GLib.get_current_dir();
+    const nohupContents = readLogFile(nohupLog);
+
+    log = [
+      `=== ${timestamp} | ERROR ===`,
+      `COMMAND: ${cmd.join(" ")}`,
+      `ENV: PATH=${pathEnv}`,
+      `ENV: HOME=${homeEnv}`,
+      `CWD: ${currentDir}`,
+      `PROVIDER: ${provider || "(none)"}`,
+      `NOHUP_LOG: ${nohupLog}`,
+      `ERROR: ${error.message || error}`,
+      `[NOHUP_LOG_CONTENTS]\n${nohupContents?.trim() || "(empty)"}`,
+    ].join("\n\n");
+
+    writeContentToFile(log, `${clusterName}.log`);
+    Main.notify("GNOME Extension: dev-container-manager", `Failed to create kind cluster ${clusterName}: ${error.message || error}`);
+    throw error;
+  }
+
   return pOut;
 }
 
