@@ -69,10 +69,12 @@ export const writeContentToFile = async (content, fileName, filePath = ".local/s
 
 export const createKindCluster = async (clusterName) => {
   const homedir = GLib.get_home_dir();
-
   const clusterConfig = `${homedir}/.local/share/dev-container-manager/${clusterName}.yaml`;
   const logDir = `${homedir}/.local/share/dev-container-manager`;
   const nohupLog = `${logDir}/${clusterName}.nohup.log`;
+
+  const providerEnv = dependencies["hasPodman"] ? "KIND_EXPERIMENTAL_PROVIDER=podman " : "";
+
   const cmd = [
     "systemd-run",
     "--user",
@@ -80,7 +82,7 @@ export const createKindCluster = async (clusterName) => {
     "-p", "Delegate=yes",
     "sh",
     "-c",
-    `nohup kind create cluster --name '${clusterName}' --config '${clusterConfig}' > '${nohupLog}' 2>&1`,
+    `nohup ${providerEnv}kind create cluster --name '${clusterName}' --config '${clusterConfig}' > '${nohupLog}' 2>&1`,
   ];
 
   const readLogFile = (path) => {
@@ -90,7 +92,6 @@ export const createKindCluster = async (clusterName) => {
         return contents.toString();
       }
     } catch (e) {
-      // ignore
       console.error(`Failed to read log file at ${path}:`, e);
     }
     return null;
@@ -101,18 +102,15 @@ export const createKindCluster = async (clusterName) => {
   try {
     pOut = await execCommand(cmd, (ok, command, stdout, stderr) => {
       const timestamp = new Date().toISOString();
-      const pathEnv = GLib.getenv('PATH');
-      const homeEnv = GLib.getenv('HOME');
-      const currentDir = GLib.get_current_dir();
       const nohupContents = readLogFile(nohupLog);
 
       log = [
         `=== ${timestamp} | ${ok ? "SUCCESS" : "FAILURE"} ===`,
         `COMMAND: ${command}`,
-        `ENV: PATH=${pathEnv}`,
-        `ENV: HOME=${homeEnv}`,
-        `CWD: ${currentDir}`,
-        `PROVIDER: ${provider || "(none)"}`,
+        `ENV: PATH=${GLib.getenv('PATH')}`,
+        `ENV: HOME=${GLib.getenv('HOME')}`,
+        `CWD: ${GLib.get_current_dir()}`,
+        `PROVIDER: ${provider}`,
         `NOHUP_LOG: ${nohupLog}`,
         `[STDOUT]\n${stdout?.trim() || "(empty)"}`,
         `[STDERR]\n${stderr?.trim() || "(empty)"}`,
@@ -123,18 +121,15 @@ export const createKindCluster = async (clusterName) => {
     });
   } catch (error) {
     const timestamp = new Date().toISOString();
-    const pathEnv = GLib.getenv('PATH');
-    const homeEnv = GLib.getenv('HOME');
-    const currentDir = GLib.get_current_dir();
     const nohupContents = readLogFile(nohupLog);
 
     log = [
       `=== ${timestamp} | ERROR ===`,
       `COMMAND: ${cmd.join(" ")}`,
-      `ENV: PATH=${pathEnv}`,
-      `ENV: HOME=${homeEnv}`,
-      `CWD: ${currentDir}`,
-      `PROVIDER: ${provider || "(none)"}`,
+      `ENV: PATH=${GLib.getenv('PATH')}`,
+      `ENV: HOME=${GLib.getenv('HOME')}`,
+      `CWD: ${GLib.get_current_dir()}`,
+      `PROVIDER: ${provider}`,
       `NOHUP_LOG: ${nohupLog}`,
       `ERROR: ${error.message || error}`,
       `[NOHUP_LOG_CONTENTS]\n${nohupContents?.trim() || "(empty)"}`,
